@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #1a1a2e;
-    --surface: #16213e;
+    --bg: #76add8;
+    --surface: #32a0fa;
     --card: #202030;
     --border: rgba(255,255,255,0.1);
-    --accent: #00b4d8;
-    --accent2: #0077b6;
+    --accent: #3fe3eb;
+    --accent2: #074df0;
     --text: #e0e0e0;
     --muted: #7a7a9a;
     --success: #00f5a0;
@@ -33,18 +33,32 @@
     position: fixed;
     inset: 0;
     bottom: 48px;
-    background:
-      radial-gradient(ellipse at 20% 50%, rgba(0,119,182,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(0,180,216,0.1) 0%, transparent 50%),
-      linear-gradient(135deg, #0d1b2a 0%, #1a1a2e 40%, #0d1b35 100%);
     z-index: 0;
   }
   #desktop::before {
     content:'';
     position:absolute;
     inset:0;
-    background-image: radial-gradient(rgba(0,180,216,0.04) 1px, transparent 1px);
     background-size: 32px 32px;
+  }
+
+  body {
+    background: #333 url(../img/pattern.svg) repeat center;
+    color: white;
+    text-align: center;
+    padding: 40px;
+    margin: 0;
+  }
+
+  body:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 75%;
+    height: 100%;
+    background: url(../img/decor-parts.svg) no-repeat right top;
+    z-index: 0;
   }
 
   /* HUD */
@@ -156,7 +170,7 @@
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
     box-shadow:
-      0 32px 80px rgba(0,0,0,.7),
+      0 32px 80px rgba(0, 0, 0, 0.7),
       0 0 0 1px rgba(255,255,255,.04),
       inset 0 1px 0 rgba(255,255,255,.07);
     z-index: 50;
@@ -413,23 +427,23 @@ const APPS = [
 const TASKS = [
   {
     id:'close',
-    label:'❌ Закрийте вікно',
+    label:'Закрийте вікно',
     hint:'Натисніть кнопку ✕ у правому куті заголовка',
-    emoji:'❌',
+    emoji:'',
     targetBtn:'close'
   },
   {
     id:'minimize',
-    label:'➖ Згорніть вікно',
+    label:'Згорніть вікно',
     hint:'Натисніть кнопку  —  (мінімізувати)',
-    emoji:'➖',
+    emoji:'',
     targetBtn:'min'
   },
   {
     id:'maximize',
-    label:'⬜ Розгорніть вікно',
+    label:'Розгорніть вікно',
     hint:'Натисніть кнопку  □  (розгорнути на весь екран)',
-    emoji:'⬜',
+    emoji:'',
     targetBtn:'max'
   },
   {
