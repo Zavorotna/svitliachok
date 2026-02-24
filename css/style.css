@@ -121,7 +121,7 @@ body.is-paused * {
 .jar-glass {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(2px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(113, 72, 216, 0.3);
     border-top: none;
     border-radius: 0 0 20px 20px;
     box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05);
@@ -141,7 +141,7 @@ body.is-paused * {
 }
 
 .jar-active {
-    box-shadow: 0 0 50px #fde047, inset 0 0 40px rgba(253, 224, 71, 0.5) !important;
+    box-shadow: 0 0 50px #fd5c47, inset 0 0 40px rgba(253, 224, 71, 0.5) !important;
     border-color: #fde047 !important;
 }
 
@@ -161,4 +161,78 @@ body.is-paused * {
     border-radius: 50%;
     pointer-events: none;
     z-index: 40;
+}
+
+/* Основні стилі для баночки та світла */
+.jar-glass {
+    background-color: rgba(36, 215, 255, 0.1);
+    border: 2px solid rgba(36, 215, 255, 0.5);
+    box-shadow: inset 0 0 15px rgba(36, 215, 255, 0.3),
+                0 0 30px rgba(36, 215, 255, 0.3);
+    border-radius: 1rem;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s;
+}
+
+/* Світлячки */
+.firefly i {
+    color: #24d7ff;
+    filter: drop-shadow(0 0 8px #24d7ffaa);
+}
+
+#jar-inner-glow {
+    background-color: rgba(36, 215, 255, 0.2);
+}
+
+/* Тло градієнт */
+body {
+    background: linear-gradient(135deg, #0a192f 0%, #1e3f5a 50%, #24d7ff 100%);
+}
+
+/* Підсвітка лісу */
+#forest-glow {
+    background: linear-gradient(to top, rgba(36, 215, 255, 0.4), rgba(36, 215, 255, 0.05));
+}
+
+/* Частинки */
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #24d7ff;
+    pointer-events: none;
+    z-index: 100;
+    animation: pop-particle 0.4s ease-out forwards;
+}
+
+@keyframes pop-particle {
+    to {
+        transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Конфетті */
+.confetti {
+    position: absolute;
+    width: 6px;
+    height: 12px;
+    background-color: #24d7ff;
+    top: 0;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotateZ(360deg);
+        opacity: 0;
+    }
+}
+
+/* Активна баночка при попаданні */
+.jar-active {
+    box-shadow: 0 0 25px #24d7ffaa, inset 0 0 15px #24d7ff55 !important;
 }
