@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖥️ Мій Комп'ютер</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:#1a7abf;
+  height:100vh;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── TASKBAR ── */
+#taskbar{
+  position:fixed;bottom:0;left:0;right:0;height:52px;
+  background:linear-gradient(#2a4a7f,#162e55);
+  display:flex;align-items:center;padding:0 14px;gap:10px;
+  z-index:9000;border-top:1px solid rgba(255,255,255,.15);
+  box-shadow:0 -3px 18px rgba(0,0,0,.45);
+}
+#start-btn{
+  background:linear-gradient(135deg,#27ae60,#1a7a40);
+  color:#fff;border:none;border-radius:8px;
+  padding:7px 16px;font:800 14px 'Nunito',sans-serif;
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);
+  transition:transform .12s;
+}
+#start-btn:hover{transform:scale(1.06);}
+#start-btn:active{transform:scale(.94);}
+#tb-score{
+  margin-left:auto;color:#fff;font-size:15px;font-weight:800;
+  background:rgba(255,255,255,.12);border-radius:20px;
+  padding:5px 14px;display:flex;align-items:center;gap:6px;
+}
+#clock{
+  color:#fff;font-size:15px;font-weight:700;
+  background:rgba(255,255,255,.1);border-radius:6px;padding:4px 10px;
+}
+
+/* ── DESKTOP ICONS ── */
+#desktop{
+  position:absolute;top:0;left:0;right:0;bottom:52px;
+  display:flex;flex-wrap:wrap;align-content:flex-start;
+  padding:22px;gap:14px;
+}
+.icon{
+  width:90px;display:flex;flex-direction:column;
+  align-items:center;gap:6px;cursor:pointer;
+  border-radius:12px;padding:8px 4px;
+  transition:background .15s,transform .12s;position:relative;
+}
+.icon:hover{background:rgba(255,255,255,.22);transform:scale(1.07);}
+.icon-img{
+  width:54px;height:54px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;box-shadow:0 4px 14px rgba(0,0,0,.28);
+  position:relative;
+}
+.icon-lbl{
+  color:#fff;font-size:11px;font-weight:700;text-align:center;
+  text-shadow:1px 1px 4px rgba(0,0,0,.9);line-height:1.2;
+}
+.badge{
+  position:absolute;top:-5px;right:-5px;
+  background:#e74c3c;color:#fff;font-size:10px;font-weight:800;
+  border-radius:10px;padding:1px 5px;border:2px solid #fff;
+}
+.badge.done{background:#27ae60;}
+
+/* ── WINDOWS ── */
+.win{
+  position:absolute;background:#f0f4ff;
+  border-radius:16px;box-shadow:0 22px 60px rgba(0,0,0,.55);
+  display:none;flex-direction:column;
+  overflow:hidden;border:1px solid rgba(255,255,255,.3);
+  min-width:340px;
+}
+.win.open{display:flex;}
+.win-hdr{
+  background:linear-gradient(135deg,#2c5f9e,#1a3a6e);
+  color:#fff;padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  cursor:move;border-radius:16px 16px 0 0;flex-shrink:0;
+  touch-action:none;
+}
+.win-title{font-weight:800;font-size:13px;flex:1;}
+.win-close{
+  width:26px;height:26px;border-radius:50%;border:none;
+  background:#e74c3c;color:#fff;font-size:12px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.win-close:hover{background:#c0392b;transform:scale(1.12);}
+.win-body{
+  padding:18px;flex:1;display:flex;flex-direction:column;
+  align-items:center;gap:12px;
+}
+
+/* ── SHARED GAME UI ── */
+.instruction{
+  background:linear-gradient(135deg,#3498db,#2471a3);
+  color:#fff;border-radius:12px;padding:9px 14px;
+  font-size:13px;font-weight:700;text-align:center;width:100%;
+}
+.big-num{font-size:52px;font-weight:900;color:#2c3e50;line-height:1;}
+.goal-txt{font-size:13px;color:#7f8c8d;font-weight:700;}
+.pbar{width:100%;height:18px;background:#dde;border-radius:9px;overflow:hidden;}
+.pfill{height:100%;border-radius:9px;transition:width .35s ease;background:linear-gradient(90deg,#27ae60,#2ecc71);}
+.done-msg{
+  display:none;flex-direction:column;align-items:center;gap:4px;
+  background:linear-gradient(135deg,#f9ca24,#f0932b);
+  border-radius:14px;padding:14px;text-align:center;
+  font-size:14px;font-weight:800;color:#fff;width:100%;
+}
+.done-msg.show{display:flex;}
+.done-msg .big{font-size:38px;}
+
+/* ── CLICK GAME ── */
+#click-target{
+  width:120px;height:120px;border-radius:50%;
+  background:linear-gradient(135deg,#e74c3c,#c0392b);
+  border:4px solid #fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:48px;
+  box-shadow:0 8px 26px rgba(231,76,60,.5);
+  animation:pulse 1.4s ease-in-out infinite;transition:background .2s;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+#click-target:active{transform:scale(.88)!important;animation:none;}
+
+/* ── DBLCLICK GAME ── */
+#dbl-target{
+  width:130px;height:130px;border-radius:18px;
+  background:linear-gradient(135deg,#9b59b6,#6c3483);
+  border:4px solid #fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;font-size:44px;
+  box-shadow:0 8px 26px rgba(155,89,182,.5);
+  animation:bob 2s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#dbl-target .hint{font-size:12px;color:rgba(255,255,255,.9);font-weight:700;}
+
+/* ── DRAG GAME ── */
+#drag-stage{
+  width:100%;height:180px;position:relative;
+  background:linear-gradient(135deg,#ecf0f1,#dfe6e9);
+  border-radius:14px;border:3px dashed #bdc3c7;
+}
+#drag-box{
+  position:absolute;
+  width:60px;height:60px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#e67e22,#ca6f1e);
+  border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  box-shadow:0 5px 16px rgba(230,126,34,.5);
+  cursor:grab;
+  touch-action:none;
+  z-index:10;
+}
+#drag-box.active{cursor:grabbing;box-shadow:0 12px 30px rgba(230,126,34,.65);transform:scale(1.1) rotate(3deg);}
+#drag-zone{
+  position:absolute;
+  width:72px;height:72px;
+  right:18px;top:50%;margin-top:-36px;
+  border-radius:14px;
+  background:rgba(46,204,113,.2);
+  border:3px dashed #27ae60;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  transition:all .15s;
+}
+#drag-zone.over{background:rgba(46,204,113,.5);border-style:solid;transform:scale(1.1);}
+#drag-hint{
+  position:absolute;top:50%;left:calc(14% + 55px);margin-top:-14px;
+  font-size:24px;
+  animation:nudge .7s ease-in-out infinite;pointer-events:none;opacity:.6;
+}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+
+/* ── RIGHT-CLICK ── */
+#rc-target{
+  width:130px;height:130px;border-radius:18px;
+  background:linear-gradient(135deg,#1abc9c,#148f77);
+  border:4px solid #fff;cursor:context-menu;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;font-size:44px;
+  box-shadow:0 8px 26px rgba(26,188,156,.5);
+  animation:bob 1.8s ease-in-out infinite;
+}
+#rc-target .hint{font-size:12px;color:rgba(255,255,255,.9);font-weight:700;}
+
+/* ── CONTEXT MENU ── */
+#ctx-menu{
+  position:fixed;background:#fff;border-radius:10px;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+  padding:6px 0;min-width:165px;z-index:9999;display:none;
+  border:1px solid rgba(0,0,0,.1);
+}
+#ctx-menu.show{display:block;}
+.ctx-item{
+  padding:8px 16px;font:700 13px 'Nunito',sans-serif;
+  cursor:pointer;color:#2c3e50;display:flex;align-items:center;gap:8px;
+  transition:background .1s;
+}
+.ctx-item:hover{background:#eaf4fb;}
+.ctx-item.hl{background:#d5f5e3;color:#1a7a40;}
+.ctx-sep{height:1px;background:#eee;margin:4px 0;}
+
+/* ── SCROLL ── */
+#scroll-box{
+  width:100%;height:155px;overflow-y:auto;
+  border-radius:12px;border:2px solid #bdc3c7;background:#fff;
+}
+#scroll-box::-webkit-scrollbar{width:10px;}
+#scroll-box::-webkit-scrollbar-track{background:#f0f0f0;border-radius:5px;}
+#scroll-box::-webkit-scrollbar-thumb{background:#3498db;border-radius:5px;}
+.s-item{
+  padding:9px 14px;font-size:13px;font-weight:700;color:#2c3e50;
+  border-bottom:1px solid #eee;display:flex;align-items:center;gap:8px;
+  transition:background .1s;
+}
+.s-item.tgt{background:#fff9c4;cursor:pointer;}
+.s-item.tgt:hover{background:#ffe082;}
+.s-item.found{background:#d5f5e3!important;color:#1a7a40;}
+
+/* ── TROPHY ── */
+#medal-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.medal{font-size:40px;animation:mpop .4s ease;}
+@keyframes mpop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* ── FEEDBACK ── */
+.fb{
+  position:fixed;pointer-events:none;
+  font:900 22px 'Nunito',sans-serif;
+  text-shadow:2px 2px 0 rgba(0,0,0,.25);
+  animation:fbUp 1.1s ease forwards;z-index:9998;
+}
+@keyframes fbUp{
+  0%{opacity:1;transform:translateY(0) scale(.8)}
+  20%{opacity:1;transform:translateY(-12px) scale(1.25)}
+  100%{opacity:0;transform:translateY(-70px) scale(1)}
+}
+.sp{
+  position:fixed;pointer-events:none;font-size:18px;
+  animation:sfly .9s ease forwards;z-index:9997;
+}
+@keyframes sfly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:var(--t)}}
+.fw{
+  position:fixed;pointer-events:none;font-size:28px;
+  animation:fwgo 1.4s ease forwards;z-index:9999;
+}
+@keyframes fwgo{
+  0%{opacity:1;transform:translate(0,0) scale(.4)}
+  40%{opacity:1;transform:var(--e) scale(1.5)}
+  100%{opacity:0;transform:var(--e) scale(.4) translateY(40px)}
+}
+</style>
+</head>
+<body>
+
+<!-- Desktop icons -->
+<div id="desktop">
+  <div class="icon" id="ico-click">
+    <div class="icon-img" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎯<span class="badge" id="b-click">!</span></div>
+    <div class="icon-lbl">Один клік</div>
+  </div>
+  <div class="icon" id="ico-dbl">
+    <div class="icon-img" style="background:linear-gradient(135deg,#9b59b6,#6c3483)">⚡<span class="badge" id="b-dbl">!</span></div>
+    <div class="icon-lbl">Подвійний клік</div>
+  </div>
+  <div class="icon" id="ico-drag">
+    <div class="icon-img" style="background:linear-gradient(135deg,#e67e22,#ca6f1e)">📦<span class="badge" id="b-drag">!</span></div>
+    <div class="icon-lbl">Перетягування</div>
+  </div>
+  <div class="icon" id="ico-rc">
+    <div class="icon-img" style="background:linear-gradient(135deg,#1abc9c,#148f77)">🖱️<span class="badge" id="b-rc">!</span></div>
+    <div class="icon-lbl">Права кнопка</div>
+  </div>
+  <div class="icon" id="ico-scroll">
+    <div class="icon-img" style="background:linear-gradient(135deg,#3498db,#1a5276)">📜<span class="badge" id="b-scroll">!</span></div>
+    <div class="icon-lbl">Прокрутка</div>
+  </div>
+  <div class="icon" id="ico-trophy">
+    <div class="icon-img" style="background:linear-gradient(135deg,#f1c40f,#d4ac0d)">🏆</div>
+    <div class="icon-lbl">Нагороди</div>
+  </div>
+</div>
+
+<!-- WINDOW: CLICK -->
+<div class="win" id="w-click" style="width:310px;top:50px;left:80px">
+  <div class="win-hdr" data-w="w-click">🎯 <span class="win-title">Один клік — Вцілься!</span>
+    <button class="win-close" data-close="w-click">✕</button></div>
+  <div class="win-body">
+    <div class="instruction">👆 Натисни на мішень 10 разів!</div>
+    <div class="big-num" id="c-n">0</div>
+    <div class="goal-txt" id="c-g">Ціль: 10</div>
+    <div class="pbar"><div class="pfill" id="c-b" style="width:0"></div></div>
+    <div id="click-target">🎯</div>
+    <div class="done-msg" id="c-done"><div class="big">🌟</div>Чудово! Ти вмієш клікати!<div>+10 ⭐</div></div>
+  </div>
+</div>
+
+<!-- WINDOW: DBLCLICK -->
+<div class="win" id="w-dbl" style="width:310px;top:70px;left:420px">
+  <div class="win-hdr" data-w="w-dbl">⚡ <span class="win-title">Подвійний клік — Відкрий!</span>
+    <button class="win-close" data-close="w-dbl">✕</button></div>
+  <div class="win-body">
+    <div class="instruction">✌️ Двічі швидко клікни по іконці!</div>
+    <div class="big-num" id="d-n">0</div>
+    <div class="goal-txt" id="d-g">Ціль: 5</div>
+    <div class="pbar"><div class="pfill" id="d-b" style="width:0;background:linear-gradient(90deg,#9b59b6,#8e44ad)"></div></div>
+    <div id="dbl-target">🎁<div class="hint">дво-клік!</div></div>
+    <div class="done-msg" id="d-done"><div class="big">⚡</div>Супер! Подвійний клік освоєно!<div>+15 ⭐</div></div>
+  </div>
+</div>
+
+<!-- WINDOW: DRAG -->
+<div class="win" id="w-drag" style="width:370px;top:90px;left:760px">
+  <div class="win-hdr" data-w="w-drag">📦 <span class="win-title">Перетягування — Склади!</span>
+    <button class="win-close" data-close="w-drag">✕</button></div>
+  <div class="win-body">
+    <div class="instruction">🖱️ Утримуй кнопку і тягни коробку у зелену зону!</div>
+    <div class="big-num" id="dr-n">0</div>
+    <div class="goal-txt" id="dr-g">Ціль: 5</div>
+    <div class="pbar"><div class="pfill" id="dr-b" style="width:0;background:linear-gradient(90deg,#e67e22,#d35400)"></div></div>
+    <div id="drag-stage">
+      <div id="drag-box">📦</div>
+      <div id="drag-zone">🏁</div>
+      <div id="drag-hint">➡️</div>
+    </div>
+    <div class="done-msg" id="dr-done"><div class="big">🚀</div>Браво! Перетягування освоєно!<div>+20 ⭐</div></div>
+  </div>
+</div>
+
+<!-- WINDOW: RIGHT CLICK -->
+<div class="win" id="w-rc" style="width:310px;top:300px;left:80px">
+  <div class="win-hdr" data-w="w-rc">🖱️ <span class="win-title">Права кнопка — Меню!</span>
+    <button class="win-close" data-close="w-rc">✕</button></div>
+  <div class="win-body">
+    <div class="instruction">👉 Клікни ПРАВОЮ кнопкою миші по іконці!</div>
+    <div class="big-num" id="rc-n">0</div>
+    <div class="goal-txt" id="rc-g">Ціль: 5</div>
+    <div class="pbar"><div class="pfill" id="rc-b" style="width:0;background:linear-gradient(90deg,#1abc9c,#148f77)"></div></div>
+    <div id="rc-target">🖥️<div class="hint">права кнопка!</div></div>
+    <div class="done-msg" id="rc-done"><div class="big">🖱️</div>Відмінно! Ти знаєш праву кнопку!<div>+15 ⭐</div></div>
+  </div>
+</div>
+
+<!-- WINDOW: SCROLL -->
+<div class="win" id="w-scroll" style="width:340px;top:320px;left:420px">
+  <div class="win-hdr" data-w="w-scroll">📜 <span class="win-title">Прокрутка — Знайди!</span>
+    <button class="win-close" data-close="w-scroll">✕</button></div>
+  <div class="win-body">
+    <div class="instruction" id="sc-inst">🔍 Прокрути список і знайди предмет!</div>
+    <div class="big-num" id="sc-n">0</div>
+    <div class="goal-txt" id="sc-g">Ціль: 5</div>
+    <div class="pbar"><div class="pfill" id="sc-b" style="width:0;background:linear-gradient(90deg,#3498db,#1a5276)"></div></div>
+    <div id="scroll-box"></div>
+    <div class="done-msg" id="sc-done"><div class="big">📜</div>Молодець! Прокрутка освоєна!<div>+15 ⭐</div></div>
+  </div>
+</div>
+
+<!-- WINDOW: TROPHY -->
+<div class="win" id="w-trophy" style="width:290px;top:180px;left:250px">
+  <div class="win-hdr" data-w="w-trophy">🏆 <span class="win-title">Мої нагороди</span>
+    <button class="win-close" data-close="w-trophy">✕</button></div>
+  <div class="win-body">
+    <div style="font-size:50px">⭐</div>
+    <div class="big-num" id="total-stars">0</div>
+    <div class="goal-txt">зірочок зібрано</div>
+    <div id="medal-grid"></div>
+    <div style="font-size:12px;color:#95a5a6;font-weight:600;text-align:center">Виконуй завдання щоб отримати медалі! 🌟</div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div id="ctx-menu">
+  <div class="ctx-item">📂 Відкрити</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item hl" id="ctx-ok">✅ Правильний пункт!</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item">🗑️ Видалити</div>
+  <div class="ctx-item">⚙️ Властивості</div>
+</div>
+
+<!-- Taskbar -->
+<div id="taskbar">
+  <button id="start-btn">🖥️ Старт</button>
+  <div id="tb-score">⭐ <span id="tb-n">0</span> зірочок</div>
+  <div id="clock">--:--</div>
+</div>
+
+<script>
+// ── STATE ──
+const S={
+  stars:0,
+  click:{n:0,goal:10,done:false},
+  dbl:  {n:0,goal:5, done:false},
+  drag: {n:0,goal:5, done:false},
+  rc:   {n:0,goal:5, done:false},
+  sc:   {n:0,goal:5, done:false},
+};
+
+// ── CLOCK ──
+setInterval(()=>{
+  const d=new Date();
+  document.getElementById('clock').textContent=
+    String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+},1000);
+
+// ── WINDOW MANAGEMENT ──
+let topZ=500;
+
+// Make title bars draggable
+document.querySelectorAll('.win-hdr').forEach(hdr=>{
+  let on=false,ox=0,oy=0;
+  hdr.addEventListener('pointerdown',e=>{
+    if(e.target.classList.contains('win-close'))return;
+    on=true; hdr.setPointerCapture(e.pointerId);
+    const r=hdr.parentElement.getBoundingClientRect();
+    ox=e.clientX-r.left; oy=e.clientY-r.top;
+    front(hdr.parentElement);
+    e.preventDefault();
+  });
+  hdr.addEventListener('pointermove',e=>{
+    if(!on)return;
+    const w=hdr.parentElement;
+    w.style.left=Math.max(0,e.clientX-ox)+'px';
+    w.style.top =Math.max(0,e.clientY-oy)+'px';
+  });
+  hdr.addEventListener('pointerup',()=>on=false);
+  hdr.addEventListener('pointercancel',()=>on=false);
+});
+
+function front(el){el.style.zIndex=++topZ;}
+function openWin(id){
+  const w=document.getElementById(id);
+  w.classList.add('open'); front(w);
+  if(id==='w-drag') requestAnimationFrame(()=>requestAnimationFrame(resetBox));
+  if(id==='w-scroll') buildList();
+}
+function closeWin(id){document.getElementById(id).classList.remove('open');}
+function openAll(){['w-click','w-dbl','w-drag','w-rc','w-scroll'].forEach(openWin);}
+
+// ── HELPERS ──
+function addStars(n){
+  S.stars+=n;
+  document.getElementById('tb-n').textContent=S.stars;
+  document.getElementById('total-stars').textContent=S.stars;
+}
+function markDone(bid){const b=document.getElementById(bid);b.textContent='✓';b.classList.add('done');}
+function addMedal(em){const d=document.createElement('div');d.className='medal';d.textContent=em;document.getElementById('medal-grid').appendChild(d);}
+
+function fb(x,y,t,c){
+  const e=document.createElement('div');e.className='fb';
+  e.style.cssText=`left:${x-30}px;top:${y-20}px;color:${c||'#f1c40f'}`;
+  e.textContent=t; document.body.appendChild(e);
+  setTimeout(()=>e.remove(),1150);
+}
+function sparkle(x,y){
+  ['⭐','✨','🌟','💫','⭐','✨'].forEach((em,i)=>{
+    const e=document.createElement('div'); e.className='sp';
+    e.style.cssText=`left:${x}px;top:${y}px`;e.textContent=em;
+    const a=(i/6)*Math.PI*2,d=40+Math.random()*35;
+    e.style.setProperty('--t',`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px)`);
+    e.style.animationDelay=Math.random()*.15+'s';
+    document.body.appendChild(e);setTimeout(()=>e.remove(),950);
+  });
+}
+function fireworks(){
+  ['🎉','🎊','🌟','⭐','✨','💫','🎈'].forEach(em=>{
+    for(let i=0;i<2;i++)setTimeout(()=>{
+      const e=document.createElement('div');e.className='fw';
+      e.style.cssText=`left:${Math.random()*window.innerWidth}px;top:${Math.random()*(window.innerHeight-80)}px`;
+      const ex=(Math.random()-.5)*180,ey=(Math.random()-.5)*180;
+      e.style.setProperty('--e',`translate(${ex}px,${ey}px)`);
+      e.textContent=em; document.body.appendChild(e);
+      setTimeout(()=>e.remove(),1500);
+    },Math.random()*600);
+  });
+}
+
+// ══ GAME 1: CLICK ══
+document.getElementById('click-target').addEventListener('click',function(e){
+  if(S.click.done)return;
+  S.click.n++;
+  document.getElementById('c-n').textContent=S.click.n;
+  document.getElementById('c-b').style.width=(S.click.n/S.click.goal*100)+'%';
+  addStars(1); fb(e.clientX,e.clientY,'+1⭐','#e74c3c');
+  if(S.click.n>=S.click.goal){
+    S.click.done=true;
+    document.getElementById('c-g').textContent='✅ Виконано!';
+    document.getElementById('c-done').classList.add('show');
+    markDone('b-click'); addStars(10); fireworks(); addMedal('🎯');
+  }
+});
+
+// ══ GAME 2: DBLCLICK ══
+function handleDbl(){
+  if(S.dbl.done)return;
+  S.dbl.n++;
+  document.getElementById('d-n').textContent=S.dbl.n;
+  document.getElementById('d-b').style.width=(S.dbl.n/S.dbl.goal*100)+'%';
+  addStars(3);
+  const r=document.getElementById('dbl-target').getBoundingClientRect();
+  sparkle(r.left+r.width/2,r.top+r.height/2);
+  fb(r.left+20,r.top,'+3⭐','#9b59b6');
+  if(S.dbl.n>=S.dbl.goal){
+    S.dbl.done=true;
+    document.getElementById('d-g').textContent='✅ Виконано!';
+    document.getElementById('d-done').classList.add('show');
+    markDone('b-dbl'); addStars(15); fireworks(); addMedal('⚡');
+  }
+}
+function dblHint(el){const r=el.getBoundingClientRect();fb(r.left+40,r.top+20,'✌️ Двічі!','#9b59b6');}
+
+// ══ GAME 3: DRAG — clean pointer-capture approach ══
+const dragBox  = document.getElementById('drag-box');
+const dragZone = document.getElementById('drag-zone');
+const dragStage= document.getElementById('drag-stage');
+
+// offsets inside the box where user grabbed
+let ox=0, oy=0;
+
+function resetBox(){
+  const sr=dragStage.getBoundingClientRect();
+  if(!sr.width)return;
+  dragBox.style.left=Math.round(sr.width*.12)+'px';
+  dragBox.style.top =Math.round((sr.height-dragBox.offsetHeight)/2)+'px';
+  dragBox.style.transform='';
+}
+
+function isHit(clientX,clientY){
+  const r=dragZone.getBoundingClientRect();
+  return clientX>=r.left && clientX<=r.right && clientY>=r.top && clientY<=r.bottom;
+}
+
+dragBox.addEventListener('pointerdown',function(e){
+  if(S.drag.done)return;
+  this.setPointerCapture(e.pointerId);
+  const r=this.getBoundingClientRect();
+  ox=e.clientX-r.left;
+  oy=e.clientY-r.top;
+  this.classList.add('active');
+  e.stopPropagation();
+  e.preventDefault();
+});
+
+dragBox.addEventListener('pointermove',function(e){
+  if(!this.classList.contains('active'))return;
+  const sr=dragStage.getBoundingClientRect();
+  this.style.left=(e.clientX-sr.left-ox)+'px';
+  this.style.top =(e.clientY-sr.top -oy)+'px';
+  dragZone.classList.toggle('over',isHit(e.clientX,e.clientY));
+  e.preventDefault();
+});
+
+dragBox.addEventListener('pointerup',function(e){
+  if(!this.classList.contains('active'))return;
+  this.classList.remove('active');
+  this.style.transform='';
+  dragZone.classList.remove('over');
+
+  if(isHit(e.clientX,e.clientY) && !S.drag.done){
+    const r=dragZone.getBoundingClientRect();
+    sparkle(r.left+r.width/2,r.top+r.height/2);
+    fb(r.left,r.top-10,'+4⭐','#e67e22');
+    S.drag.n++;
+    document.getElementById('dr-n').textContent=S.drag.n;
+    document.getElementById('dr-b').style.width=(S.drag.n/S.drag.goal*100)+'%';
+    addStars(4);
+    dragZone.classList.add('over');
+    setTimeout(()=>{dragZone.classList.remove('over');if(!S.drag.done)resetBox();},600);
+    if(S.drag.n>=S.drag.goal){
+      S.drag.done=true;
+      document.getElementById('dr-g').textContent='✅ Виконано!';
+      document.getElementById('dr-done').classList.add('show');
+      document.getElementById('drag-hint').style.display='none';
+      markDone('b-drag'); addStars(20); fireworks(); addMedal('📦');
+    }
+  } else {
+    resetBox();
+  }
+  e.preventDefault();
+});
+
+dragBox.addEventListener('pointercancel',function(){
+  this.classList.remove('active');
+  this.style.transform='';
+  dragZone.classList.remove('over');
+  resetBox();
+});
+
+// ══ GAME 4: RIGHT CLICK ══
+let rcWaiting=false;
+
+function handleRC(e){
+  e.preventDefault(); e.stopPropagation();
+  if(S.rc.done)return;
+  rcWaiting=true;
+  const m=document.getElementById('ctx-menu');
+  m.classList.add('show');
+  let x=e.clientX, y=e.clientY;
+  if(x+170>window.innerWidth)x=window.innerWidth-175;
+  if(y+145>window.innerHeight)y=window.innerHeight-150;
+  m.style.left=x+'px'; m.style.top=y+'px';
+}
+
+document.getElementById('ctx-ok').addEventListener('click',function(e){
+  if(!rcWaiting)return;
+  e.stopPropagation();
+  document.getElementById('ctx-menu').classList.remove('show');
+  rcWaiting=false;
+  S.rc.n++;
+  document.getElementById('rc-n').textContent=S.rc.n;
+  document.getElementById('rc-b').style.width=(S.rc.n/S.rc.goal*100)+'%';
+  const r=document.getElementById('rc-target').getBoundingClientRect();
+  sparkle(r.left+r.width/2,r.top+r.height/2);
+  fb(r.left+20,r.top,'+3⭐','#1abc9c'); addStars(3);
+  if(S.rc.n>=S.rc.goal){
+    S.rc.done=true;
+    document.getElementById('rc-g').textContent='✅ Виконано!';
+    document.getElementById('rc-done').classList.add('show');
+    markDone('b-rc'); addStars(15); fireworks(); addMedal('🖱️');
+  }
+});
+
+document.addEventListener('click',()=>{
+  document.getElementById('ctx-menu').classList.remove('show');
+  rcWaiting=false;
+});
+document.addEventListener('contextmenu',e=>{
+  if(e.target.id!=='rc-target'&&!e.target.closest('#rc-target'))e.preventDefault();
+});
+
+// ══ GAME 5: SCROLL & FIND ══
+const ITEMS=[
+  '🍎 Яблуко','🐶 Собака','🚀 Ракета','🌈 Веселка','🎸 Гітара',
+  '🦁 Лев','🍕 Піца','🌊 Хвиля','🎈 Кулька','🦋 Метелик',
+  '⚽ М\'яч','🎨 Фарби','🏡 Будинок','🌺 Квітка','🐠 Рибка',
+  '🎵 Нота','🍦 Морозиво','🌙 Місяць','🎃 Гарбуз','🚂 Поїзд',
+];
+let scTarget='';
+
+function buildList(){
+  if(S.sc.done)return;
+  const box=document.getElementById('scroll-box');
+  box.innerHTML='';
+  const pool=[...ITEMS].sort(()=>Math.random()-.5);
+  // target placed at position 8-15 so user must scroll
+  const ti=8+Math.floor(Math.random()*7);
+  scTarget=pool[ti];
+  pool.forEach((it,i)=>{
+    const d=document.createElement('div');
+    const isTgt=(it===scTarget);
+    d.className='s-item'+(isTgt?' tgt':'');
+    d.textContent=it;
+    if(isTgt)d.addEventListener('click',hitItem);
+    box.appendChild(d);
+  });
+  document.getElementById('sc-inst').textContent='🔍 Знайди і натисни: '+scTarget;
+  box.scrollTop=0;
+}
+
+function hitItem(){
+  if(S.sc.done)return;
+  this.classList.add('found');
+  this.removeEventListener('click',hitItem);
+  S.sc.n++;
+  document.getElementById('sc-n').textContent=S.sc.n;
+  document.getElementById('sc-b').style.width=(S.sc.n/S.sc.goal*100)+'%';
+  const r=this.getBoundingClientRect();
+  sparkle(r.left+r.width/2,r.top+r.height/2);
+  fb(r.left+20,r.top,'+3⭐','#3498db'); addStars(3);
+  if(S.sc.n>=S.sc.goal){
+    S.sc.done=true;
+    document.getElementById('sc-g').textContent='✅ Виконано!';
+    document.getElementById('sc-done').classList.add('show');
+    markDone('b-scroll'); addStars(15); fireworks(); addMedal('📜');
+  } else {
+    setTimeout(buildList,700);
+  }
+}
+
+// init clock immediately
+const d=new Date();
+document.getElementById('clock').textContent=
+  String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+
+// ── BIND ALL EVENTS HERE (after functions defined) ──
+
+// Desktop icons
+document.getElementById('ico-click').addEventListener('click', ()=>openWin('w-click'));
+document.getElementById('ico-drag').addEventListener('click',  ()=>openWin('w-drag'));
+document.getElementById('ico-rc').addEventListener('click',    ()=>openWin('w-rc'));
+document.getElementById('ico-scroll').addEventListener('click',()=>openWin('w-scroll'));
+document.getElementById('ico-trophy').addEventListener('click',()=>openWin('w-trophy'));
+// dbl-click icon: single click shows hint, double click opens window
+document.getElementById('ico-dbl').addEventListener('click',   ()=>dblHint(document.getElementById('ico-dbl')));
+document.getElementById('ico-dbl').addEventListener('dblclick',()=>openWin('w-dbl'));
+
+// Close buttons
+document.querySelectorAll('.win-close[data-close]').forEach(btn=>{
+  btn.addEventListener('click', ()=>closeWin(btn.dataset.close));
+});
+
+// Start button
+document.getElementById('start-btn').addEventListener('click', openAll);
+
+// Dbl-click target
+document.getElementById('dbl-target').addEventListener('dblclick', handleDbl);
+
+// Right-click target
+document.getElementById('rc-target').addEventListener('contextmenu', handleRC);
+</script>
+</body>
+</html>
