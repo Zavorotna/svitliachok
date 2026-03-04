@@ -12,14 +12,14 @@
   --surface: #ffffff;
   --surface2: #e8faff;
   --border: #a0eaf8;
-  --accent: #7C6FFF;
+  --accent: #9185f9;
   --accent2: #FF6B6B;
   --accent3: #00b8d9;
   --green: #22c55e;
   --yellow: #f59e0b;
-  --text: #0a1628;
-  --muted: #3a7a8f;
-  --key-bg: #ffffff;
+  --text: #7488a7;
+  --muted: #4a9db9;
+  --key-bg: #909090;
   --key-border: #b0eefa;
   --key-shadow: #0ea5c9;
 }
@@ -37,7 +37,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .logo-text span{background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .tagline{color:var(--muted);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:30px}
 .categories{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:880px}
-.category{background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.9);border-radius:18px;padding:20px;width:264px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;box-shadow:0 8px 32px rgba(0,185,220,.15)}
+.category{background:rgba(185, 185, 185, 0.2);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.9);border-radius:18px;padding:20px;width:264px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;box-shadow:0 8px 32px rgba(0,185,220,.15)}
 .category::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0}
 .cat-easy::before{background:linear-gradient(90deg,var(--green),var(--accent3))}
 .cat-medium::before{background:linear-gradient(90deg,var(--yellow),var(--accent2))}
@@ -48,15 +48,15 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .cat-name{font-size:1rem;font-weight:800}
 .cat-easy .cat-name{color:var(--green)}.cat-medium .cat-name{color:var(--yellow)}.cat-hard .cat-name{color:var(--accent2)}
 .cat-levels{display:flex;flex-direction:column;gap:7px}
-.level-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(36,215,255,.1);border:1px solid rgba(0,180,220,.2);border-radius:11px;padding:9px 13px;cursor:pointer;transition:all .2s;width:100%;text-align:left}
+.level-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(249, 253, 254, 0.9);border:1px solid rgba(0,180,220,.9);border-radius:11px;padding:9px 13px;cursor:pointer;transition:all .2s;width:100%;text-align:left}
 .level-btn:hover{border-color:var(--accent);background:rgba(124,111,255,.1);transform:translateX(4px)}
 .lbname{font-size:.85rem;font-weight:700;color:var(--text)}
 .lbdesc{font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px}
-.lbbadge{font-family:'DM Mono',monospace;font-size:.68rem;padding:3px 8px;border-radius:6px;background:var(--border);color:var(--muted);white-space:nowrap}
+.lbbadge{font-family:'DM Mono',monospace;font-size:.68rem;padding:3px 8px;border-radius:6px;color:var(--muted);white-space:nowrap}
 
 /* ===== GAME ===== */
 #gameScreen{position:fixed;inset:0;overflow:hidden;align-items:stretch;justify-content:flex-start;flex-direction:column;padding:0}
-.game-top{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;z-index:10;flex-shrink:0}
+.game-top{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.3);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;z-index:10;flex-shrink:0}
 .glogo{font-size:1.05rem;font-weight:800;letter-spacing:-.5px}
 .glogo span{color:var(--accent)}
 .stats-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
@@ -69,7 +69,23 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .progress-wrap{height:4px;background:rgba(0,180,220,.2);flex-shrink:0;z-index:10}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width .5s ease}
 .game-area{position:relative;flex:1;overflow:hidden}
+body {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 40px;
+  margin: 0;
+}
 
+body:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background: url(img/decor-parts.svg) no-repeat right top;
+  z-index: 0;
+}
 /* Floating keys */
 .keys-layer{position:absolute;inset:0;z-index:50;pointer-events:none}
 .float-key{position:absolute;width:52px;height:52px;background:var(--key-bg);border:2px solid var(--key-border);border-radius:11px;box-shadow:0 4px 0 var(--key-shadow),0 8px 20px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;color:var(--text);cursor:grab;user-select:none;transition:box-shadow .15s,border-color .15s,transform .15s;pointer-events:auto;touch-action:none}
@@ -93,7 +109,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .keyboard{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.9);border-radius:16px;padding:10px 12px;box-shadow:0 12px 40px rgba(0,185,220,.25),inset 0 1px 0 rgba(255,255,255,.8)}
 .kb-row{display:flex;gap:4px;margin-bottom:4px;justify-content:center}
 .kb-slot{height:40px;background:rgba(36,215,255,.08);border:1.5px dashed rgba(0,160,200,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.78rem;color:rgba(0,80,120,.5);position:relative;transition:all .2s;flex-shrink:0}
-.kb-slot.w1{width:40px}.kb-slot.w14{width:57px}.kb-slot.w15{width:62px}.kb-slot.w175{width:71px}.kb-slot.w2{width:84px}.kb-slot.w225{width:92px}.kb-slot.w275{width:113px}.kb-slot.w6{width:244px}
+.kb-slot.w1{width:50px}.kb-slot.w14{width:67px}.kb-slot.w15{width:72px}.kb-slot.w175{width:81px}.kb-slot.w2{width:94px}.kb-slot.w225{width:102px}.kb-slot.w275{width:113px}.kb-slot.w6{width:244px}
 .kb-slot.special{background:rgba(200,245,255,.4);border:1.5px solid rgba(0,180,220,.2);color:rgba(0,100,140,.55);font-size:.58rem;font-family:'Syne',sans-serif;font-weight:700}
 .kb-slot.active-slot{border-color:rgba(124,111,255,.5);background:rgba(124,111,255,.1);color:rgba(80,60,200,.7)}
 .kb-slot.hover-slot{border-color:var(--accent)!important;background:rgba(124,111,255,.14)!important;transform:scale(1.07);box-shadow:0 0 18px rgba(124,111,255,.35)}
@@ -108,7 +124,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ===== RESULT ===== */
 #resultScreen{padding:28px}
-.result-panel{background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.9);border-radius:22px;padding:40px 36px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,185,220,.2)}
+.result-panel{background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.3);border-radius:22px;padding:40px 36px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,185,220,.2)}
 .result-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .grade-12::before,.grade-11::before,.grade-10::before{background:linear-gradient(90deg,var(--green),var(--accent3))}
 .grade-9::before,.grade-8::before,.grade-7::before{background:linear-gradient(90deg,var(--yellow),var(--green))}
@@ -151,7 +167,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <!-- START -->
 <div class="screen active" id="startScreen">
-  <div class="logo"><div class="logo-icon">⌨</div><div class="logo-text">Key<span>Puzzle</span></div></div>
+  <div class="logo"><div class="logo-text">Key<span>Puzzle</span></div></div>
   <p class="tagline">Навчайся клавіатурі граючи</p>
   <div class="categories">
     <div class="category cat-easy">
@@ -171,7 +187,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
     </div>
     <div class="category cat-hard">
-      <div class="cat-header"><div class="cat-icon">💀</div><div class="cat-name">Експерт</div></div>
+      <div class="cat-header"><div class="cat-icon">💪</div><div class="cat-name">Експерт</div></div>
       <div class="cat-levels">
         <button class="level-btn" onclick="startGame('hard',1)"><div><div class="lbname">Рівень 1</div><div class="lbdesc">Цифри + верхній ряд</div></div><div class="lbbadge">20 клавіш</div></button>
         <button class="level-btn" onclick="startGame('hard',2)"><div><div class="lbname">Рівень 2</div><div class="lbdesc">Усі три ряди літер</div></div><div class="lbbadge">31 клавіша</div></button>
