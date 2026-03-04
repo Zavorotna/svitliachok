@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeyPuzzle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #24d7ff;
+  --surface: #ffffff;
+  --surface2: #e8faff;
+  --border: #a0eaf8;
+  --accent: #7C6FFF;
+  --accent2: #FF6B6B;
+  --accent3: #00b8d9;
+  --green: #22c55e;
+  --yellow: #f59e0b;
+  --text: #0a1628;
+  --muted: #3a7a8f;
+  --key-bg: #ffffff;
+  --key-border: #b0eefa;
+  --key-shadow: #0ea5c9;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 55% 45% at 10% 15%,rgba(255,255,255,.55) 0%,transparent 60%),radial-gradient(ellipse 40% 35% at 90% 80%,rgba(124,111,255,.18) 0%,transparent 60%),radial-gradient(ellipse 30% 30% at 50% 50%,rgba(0,255,200,.1) 0%,transparent 70%);pointer-events:none;z-index:0}
+.screen{display:none;position:fixed;inset:0;z-index:1}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* ===== START ===== */
+#startScreen{padding:24px 16px;overflow-y:auto}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo-icon{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 0 30px rgba(124,111,255,.4)}
+.logo-text{font-size:2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--text),var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-text span{background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{color:var(--muted);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:30px}
+.categories{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:880px}
+.category{background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.9);border-radius:18px;padding:20px;width:264px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;box-shadow:0 8px 32px rgba(0,185,220,.15)}
+.category::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0}
+.cat-easy::before{background:linear-gradient(90deg,var(--green),var(--accent3))}
+.cat-medium::before{background:linear-gradient(90deg,var(--yellow),var(--accent2))}
+.cat-hard::before{background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.category:hover{border-color:var(--accent);transform:translateY(-4px)}
+.cat-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cat-icon{font-size:1.6rem}
+.cat-name{font-size:1rem;font-weight:800}
+.cat-easy .cat-name{color:var(--green)}.cat-medium .cat-name{color:var(--yellow)}.cat-hard .cat-name{color:var(--accent2)}
+.cat-levels{display:flex;flex-direction:column;gap:7px}
+.level-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(36,215,255,.1);border:1px solid rgba(0,180,220,.2);border-radius:11px;padding:9px 13px;cursor:pointer;transition:all .2s;width:100%;text-align:left}
+.level-btn:hover{border-color:var(--accent);background:rgba(124,111,255,.1);transform:translateX(4px)}
+.lbname{font-size:.85rem;font-weight:700;color:var(--text)}
+.lbdesc{font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px}
+.lbbadge{font-family:'DM Mono',monospace;font-size:.68rem;padding:3px 8px;border-radius:6px;background:var(--border);color:var(--muted);white-space:nowrap}
+
+/* ===== GAME ===== */
+#gameScreen{position:fixed;inset:0;overflow:hidden;align-items:stretch;justify-content:flex-start;flex-direction:column;padding:0}
+.game-top{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;z-index:10;flex-shrink:0}
+.glogo{font-size:1.05rem;font-weight:800;letter-spacing:-.5px}
+.glogo span{color:var(--accent)}
+.stats-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.stat-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.7);border:1px solid rgba(0,180,220,.3);border-radius:20px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:.8rem;font-weight:600}
+.stat-pill.ok{color:var(--green);border-color:rgba(86,207,136,.3)}.stat-pill.fail{color:var(--accent2);border-color:rgba(255,107,107,.3)}.stat-pill.todo{color:var(--accent);border-color:rgba(124,111,255,.3)}
+.top-actions{display:flex;gap:7px}
+.btn{font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;padding:7px 15px;border:1px solid rgba(0,180,220,.4);border-radius:9px;cursor:pointer;background:rgba(255,255,255,.7);color:var(--text);transition:all .2s;letter-spacing:.3px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.acc{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.acc:hover{background:#6A5EEE;border-color:#6A5EEE;color:#fff}
+.progress-wrap{height:4px;background:rgba(0,180,220,.2);flex-shrink:0;z-index:10}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width .5s ease}
+.game-area{position:relative;flex:1;overflow:hidden}
+
+/* Floating keys */
+.keys-layer{position:absolute;inset:0;z-index:50;pointer-events:none}
+.float-key{position:absolute;width:52px;height:52px;background:var(--key-bg);border:2px solid var(--key-border);border-radius:11px;box-shadow:0 4px 0 var(--key-shadow),0 8px 20px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;color:var(--text);cursor:grab;user-select:none;transition:box-shadow .15s,border-color .15s,transform .15s;pointer-events:auto;touch-action:none}
+.float-key:hover{border-color:var(--accent);box-shadow:0 4px 0 var(--key-shadow),0 0 22px rgba(124,111,255,.5);z-index:20;transform:translateY(-3px) scale(1.05)}
+.float-key.dragging{cursor:grabbing;opacity:.88;z-index:100;box-shadow:0 12px 40px rgba(124,111,255,.45);border-color:var(--accent)}
+.float-key.hint-glow{border-color:var(--yellow)!important;animation:hpulse .7s ease infinite alternate}
+
+/* Colorful key palette */
+.fk-c0{background:#fff0f0!important;border-color:#ff7eb3!important;box-shadow:0 4px 0 #e0507a,0 6px 18px rgba(255,126,179,.35)!important;color:#c0004a!important}
+.fk-c1{background:#fff4e6!important;border-color:#ff9f40!important;box-shadow:0 4px 0 #c86a00,0 6px 18px rgba(255,159,64,.35)!important;color:#8a3d00!important}
+.fk-c2{background:#fffde6!important;border-color:#ffd93d!important;box-shadow:0 4px 0 #b89000,0 6px 18px rgba(255,217,61,.35)!important;color:#7a5e00!important}
+.fk-c3{background:#edfff3!important;border-color:#43e97b!important;box-shadow:0 4px 0 #1aa84e,0 6px 18px rgba(67,233,123,.35)!important;color:#0a6028!important}
+.fk-c4{background:#e8f9ff!important;border-color:#38d9f5!important;box-shadow:0 4px 0 #0099bb,0 6px 18px rgba(56,217,245,.35)!important;color:#005f7a!important}
+.fk-c5{background:#f0eeff!important;border-color:#a78bfa!important;box-shadow:0 4px 0 #6d35e0,0 6px 18px rgba(167,139,250,.35)!important;color:#4a1fa0!important}
+.fk-c6{background:#fff0fb!important;border-color:#f472b6!important;box-shadow:0 4px 0 #b81e72,0 6px 18px rgba(244,114,182,.35)!important;color:#8a0050!important}
+.fk-c7{background:#ecfeff!important;border-color:#22d3ee!important;box-shadow:0 4px 0 #0088a8,0 6px 18px rgba(34,211,238,.35)!important;color:#005068!important}
+@keyframes hpulse{from{box-shadow:0 4px 0 var(--key-shadow),0 0 12px rgba(255,209,102,.4)}to{box-shadow:0 4px 0 var(--key-shadow),0 0 30px rgba(255,209,102,.9)}}
+
+/* Keyboard */
+.kb-container{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:8}
+.keyboard{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.9);border-radius:16px;padding:10px 12px;box-shadow:0 12px 40px rgba(0,185,220,.25),inset 0 1px 0 rgba(255,255,255,.8)}
+.kb-row{display:flex;gap:4px;margin-bottom:4px;justify-content:center}
+.kb-slot{height:40px;background:rgba(36,215,255,.08);border:1.5px dashed rgba(0,160,200,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.78rem;color:rgba(0,80,120,.5);position:relative;transition:all .2s;flex-shrink:0}
+.kb-slot.w1{width:40px}.kb-slot.w14{width:57px}.kb-slot.w15{width:62px}.kb-slot.w175{width:71px}.kb-slot.w2{width:84px}.kb-slot.w225{width:92px}.kb-slot.w275{width:113px}.kb-slot.w6{width:244px}
+.kb-slot.special{background:rgba(200,245,255,.4);border:1.5px solid rgba(0,180,220,.2);color:rgba(0,100,140,.55);font-size:.58rem;font-family:'Syne',sans-serif;font-weight:700}
+.kb-slot.active-slot{border-color:rgba(124,111,255,.5);background:rgba(124,111,255,.1);color:rgba(80,60,200,.7)}
+.kb-slot.hover-slot{border-color:var(--accent)!important;background:rgba(124,111,255,.14)!important;transform:scale(1.07);box-shadow:0 0 18px rgba(124,111,255,.35)}
+.kb-slot.placed-ok{border:2px solid rgba(34,197,94,.7);background:rgba(34,197,94,.15);color:#15803d;font-weight:700}
+.kb-slot.placed-err{animation:errshake .35s ease;border-color:var(--accent2)!important;background:rgba(255,107,107,.1)!important}
+.kb-slot .slbl{position:absolute;bottom:2px;right:4px;font-size:.44rem;color:rgba(0,80,120,.55);font-family:'Syne',sans-serif;font-weight:800;pointer-events:none}
+@keyframes errshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}60%{transform:translateX(5px)}}
+@keyframes popin{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.pop{animation:popin .35s cubic-bezier(.34,1.56,.64,1)}
+.level-label{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border:1px solid rgba(0,180,220,.3);border-radius:20px;padding:4px 16px;font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;z-index:6;pointer-events:none;white-space:nowrap}
+.instruction{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.5px;pointer-events:none;z-index:6;white-space:nowrap}
+
+/* ===== RESULT ===== */
+#resultScreen{padding:28px}
+.result-panel{background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.9);border-radius:22px;padding:40px 36px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,185,220,.2)}
+.result-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.grade-12::before,.grade-11::before,.grade-10::before{background:linear-gradient(90deg,var(--green),var(--accent3))}
+.grade-9::before,.grade-8::before,.grade-7::before{background:linear-gradient(90deg,var(--yellow),var(--green))}
+.grade-6::before,.grade-5::before,.grade-4::before{background:linear-gradient(90deg,var(--yellow),var(--accent2))}
+.grade-3::before,.grade-2::before,.grade-1::before{background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.r-emoji{font-size:3.5rem;margin-bottom:10px}
+.r-title{font-size:1.8rem;font-weight:800;margin-bottom:5px}
+.r-grade{font-family:'DM Mono',monospace;font-size:4.5rem;font-weight:700;margin:14px 0;line-height:1;letter-spacing:-2px}
+.grade-12 .r-grade,.grade-11 .r-grade,.grade-10 .r-grade{color:var(--green)}
+.grade-9 .r-grade,.grade-8 .r-grade,.grade-7 .r-grade{color:var(--yellow)}
+.grade-6 .r-grade,.grade-5 .r-grade,.grade-4 .r-grade{color:var(--accent2)}
+.grade-3 .r-grade,.grade-2 .r-grade,.grade-1 .r-grade{color:var(--muted)}
+.r-stats{display:flex;gap:10px;justify-content:center;margin:18px 0}
+.r-stat{background:rgba(36,215,255,.1);border:1px solid rgba(0,180,220,.25);border-radius:13px;padding:12px 18px}
+.r-stat .n{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:500}
+.r-stat .l{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.rc .n{color:var(--green)}.rw .n{color:var(--accent2)}.rp .n{color:var(--accent)}
+.r-msg{color:var(--muted);font-size:.85rem;font-weight:600;margin-bottom:24px}
+.r-btns{display:flex;gap:10px;justify-content:center}
+
+/* Toast */
+.toast{position:fixed;top:65px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(255,255,255,.95);border:1px solid rgba(0,180,220,.3);border-radius:30px;padding:7px 18px;font-size:.82rem;font-weight:700;box-shadow:0 8px 30px rgba(0,185,220,.25);transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;opacity:0}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.tok{color:var(--green);border-color:rgba(86,207,136,.4)}.toast.terr{color:var(--accent2);border-color:rgba(255,107,107,.4)}
+
+/* Confetti */
+.confetti{position:fixed;pointer-events:none;z-index:1000;border-radius:3px;animation:cfall linear forwards}
+@keyframes cfall{0%{opacity:1;transform:translateY(-10px) rotate(0)}100%{opacity:0;transform:translateY(100vh) rotate(600deg)}}
+
+@media(max-width:660px){
+  .kb-slot{height:32px}
+  .kb-slot.w1{width:31px}.kb-slot.w14{width:43px}.kb-slot.w15{width:47px}.kb-slot.w175{width:55px}.kb-slot.w2{width:64px}.kb-slot.w225{width:71px}.kb-slot.w275{width:86px}.kb-slot.w6{width:182px}
+  .float-key{width:42px;height:42px;font-size:.88rem}
+  .keyboard{padding:7px 8px}.kb-row{gap:3px;margin-bottom:3px}
+}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- START -->
+<div class="screen active" id="startScreen">
+  <div class="logo"><div class="logo-icon">⌨</div><div class="logo-text">Key<span>Puzzle</span></div></div>
+  <p class="tagline">Навчайся клавіатурі граючи</p>
+  <div class="categories">
+    <div class="category cat-easy">
+      <div class="cat-header"><div class="cat-icon">🌱</div><div class="cat-name">Початківець</div></div>
+      <div class="cat-levels">
+        <button class="level-btn" onclick="startGame('easy',1)"><div><div class="lbname">Рівень 1</div><div class="lbdesc">Цифри 1–5</div></div><div class="lbbadge">5 клавіш</div></button>
+        <button class="level-btn" onclick="startGame('easy',2)"><div><div class="lbname">Рівень 2</div><div class="lbdesc">Цифри 1–0</div></div><div class="lbbadge">10 клавіш</div></button>
+        <button class="level-btn" onclick="startGame('easy',3)"><div><div class="lbname">Рівень 3</div><div class="lbdesc">Цифри + знаки</div></div><div class="lbbadge">12 клавіш</div></button>
+      </div>
+    </div>
+    <div class="category cat-medium">
+      <div class="cat-header"><div class="cat-icon">🔥</div><div class="cat-name">Середній</div></div>
+      <div class="cat-levels">
+        <button class="level-btn" onclick="startGame('medium',1)"><div><div class="lbname">Рівень 1</div><div class="lbdesc">Верхній ряд літер</div></div><div class="lbbadge">10 літер</div></button>
+        <button class="level-btn" onclick="startGame('medium',2)"><div><div class="lbname">Рівень 2</div><div class="lbdesc">Середній ряд</div></div><div class="lbbadge">11 літер</div></button>
+        <button class="level-btn" onclick="startGame('medium',3)"><div><div class="lbname">Рівень 3</div><div class="lbdesc">Нижній ряд літер</div></div><div class="lbbadge">10 літер</div></button>
+      </div>
+    </div>
+    <div class="category cat-hard">
+      <div class="cat-header"><div class="cat-icon">💀</div><div class="cat-name">Експерт</div></div>
+      <div class="cat-levels">
+        <button class="level-btn" onclick="startGame('hard',1)"><div><div class="lbname">Рівень 1</div><div class="lbdesc">Цифри + верхній ряд</div></div><div class="lbbadge">20 клавіш</div></button>
+        <button class="level-btn" onclick="startGame('hard',2)"><div><div class="lbname">Рівень 2</div><div class="lbdesc">Усі три ряди літер</div></div><div class="lbbadge">31 клавіша</div></button>
+        <button class="level-btn" onclick="startGame('hard',3)"><div><div class="lbname">Рівень 3</div><div class="lbdesc">Вся клавіатура</div></div><div class="lbbadge">43 клавіші</div></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="gameScreen">
+  <div class="game-top">
+    <div class="glogo">Key<span>Puzzle</span></div>
+    <div class="stats-row">
+      <div class="stat-pill ok">✓ <span id="correctCount">0</span></div>
+      <div class="stat-pill fail">✗ <span id="wrongCount">0</span></div>
+      <div class="stat-pill todo">◎ <span id="leftCount">0</span></div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="doHint()">💡 Підказка</button>
+      <button class="btn acc" id="finishBtn" onclick="showResult()" style="display:none">🏁 Результат</button>
+      <button class="btn" onclick="backToStart()">← Меню</button>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="game-area" id="gameArea">
+    <div class="level-label" id="levelLabel"></div>
+    <div class="instruction">👆 Перетягни клавіші на їхні місця</div>
+    <div class="kb-container"><div class="keyboard" id="keyboard"></div></div>
+    <div class="keys-layer" id="keysLayer"></div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="resultScreen">
+  <div class="result-panel" id="resultPanel">
+    <div class="r-emoji" id="rEmoji">🏆</div>
+    <div class="r-title" id="rTitle">Відмінно!</div>
+    <div class="r-grade" id="rGrade">A</div>
+    <div class="r-stats">
+      <div class="r-stat rc"><div class="n" id="rC">0</div><div class="l">Правильно</div></div>
+      <div class="r-stat rw"><div class="n" id="rW">0</div><div class="l">Помилок</div></div>
+      <div class="r-stat rp"><div class="n" id="rP">0%</div><div class="l">Точність</div></div>
+    </div>
+    <div class="r-msg" id="rMsg"></div>
+    <div class="r-btns">
+      <button class="btn acc" onclick="retryLevel()">↺ Знову</button>
+      <button class="btn" onclick="backToStart()">⌂ Меню</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ROWS = {
+  numbers:[{l:'1',k:'1'},{l:'2',k:'2'},{l:'3',k:'3'},{l:'4',k:'4'},{l:'5',k:'5'},{l:'6',k:'6'},{l:'7',k:'7'},{l:'8',k:'8'},{l:'9',k:'9'},{l:'0',k:'0'}],
+  numX:[{l:'-',k:'-'},{l:'=',k:'='}],
+  top:[{l:'Й',k:'Й'},{l:'Ц',k:'Ц'},{l:'У',k:'У'},{l:'К',k:'К'},{l:'Е',k:'Е'},{l:'Н',k:'Н'},{l:'Г',k:'Г'},{l:'Ш',k:'Ш'},{l:'Щ',k:'Щ'},{l:'З',k:'З'}],
+  topX:[{l:'Х',k:'Х'},{l:'Ї',k:'Ї'}],
+  home:[{l:'Ф',k:'Ф'},{l:'І',k:'І'},{l:'В',k:'В'},{l:'А',k:'А'},{l:'П',k:'П'},{l:'Р',k:'Р'},{l:'О',k:'О'},{l:'Л',k:'Л'},{l:'Д',k:'Д'},{l:'Ж',k:'Ж'},{l:'Є',k:'Є'}],
+  bottom:[{l:'Я',k:'Я'},{l:'Ч',k:'Ч'},{l:'С',k:'С'},{l:'М',k:'М'},{l:'И',k:'И'},{l:'Т',k:'Т'},{l:'Ь',k:'Ь'},{l:'Б',k:'Б'},{l:'Ю',k:'Ю'},{l:'.',k:'.'}]
+};
+
+const LEVEL_KEYS={
+  easy:{1:[...ROWS.numbers.slice(0,5)],2:[...ROWS.numbers],3:[...ROWS.numbers,...ROWS.numX]},
+  medium:{1:[...ROWS.top],2:[...ROWS.home],3:[...ROWS.bottom]},
+  hard:{1:[...ROWS.numbers,...ROWS.top],2:[...ROWS.top,...ROWS.topX,...ROWS.home,...ROWS.bottom],3:[...ROWS.numbers,...ROWS.numX,...ROWS.top,...ROWS.topX,...ROWS.home,...ROWS.bottom]}
+};
+
+const LEVEL_NAMES={
+  easy:['','Цифри 1–5','Цифри 1–0','Цифри + знаки'],
+  medium:['','Верхній ряд','Середній ряд','Нижній ряд'],
+  hard:['','Цифри + верхній ряд','Всі три ряди','Вся клавіатура']
+};
+
+let currentLevel='easy', currentSub=1;
+let correctCount=0, wrongCount=0, totalKeys=0, placedKeys=0;
+let activeKeys=[];
+let dragEl=null, dragOffX=0, dragOffY=0;
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function backToStart(){showScreen('startScreen')}
+function retryLevel(){startGame(currentLevel,currentSub)}
+
+function startGame(diff,sub){
+  currentLevel=diff; currentSub=sub;
+  correctCount=0; wrongCount=0; placedKeys=0;
+  activeKeys=LEVEL_KEYS[diff][sub];
+  totalKeys=activeKeys.length;
+  document.getElementById('levelLabel').textContent=(diff==='easy'?'🌱':diff==='medium'?'🔥':'💀')+' '+LEVEL_NAMES[diff][sub];
+  buildKeyboard();
+  buildFloatingKeys();
+  updateStats();
+  showScreen('gameScreen');
+}
+
+function buildKeyboard(){
+  const kb=document.getElementById('keyboard');
+  kb.innerHTML='';
+  // Row 0: numbers
+  const r0=row(); r0.appendChild(sp('~','w1'));
+  ROWS.numbers.forEach(k=>r0.appendChild(slot(k)));
+  ROWS.numX.forEach(k=>r0.appendChild(slot(k)));
+  r0.appendChild(sp('←','w15')); kb.appendChild(r0);
+  // Row 1: top letters
+  const r1=row(); r1.appendChild(sp('Tab','w14'));
+  ROWS.top.forEach(k=>r1.appendChild(slot(k)));
+  ROWS.topX.forEach(k=>r1.appendChild(slot(k)));
+  r1.appendChild(sp('\\','w14')); kb.appendChild(r1);
+  // Row 2: home
+  const r2=row(); r2.appendChild(sp('Caps','w175'));
+  ROWS.home.forEach(k=>r2.appendChild(slot(k)));
+  r2.appendChild(sp('Enter','w175')); kb.appendChild(r2);
+  // Row 3: bottom
+  const r3=row(); r3.appendChild(sp('Shift','w225'));
+  ROWS.bottom.forEach(k=>r3.appendChild(slot(k)));
+  r3.appendChild(sp('Shift','w225')); kb.appendChild(r3);
+  // Row 4: space
+  const r4=row();
+  ['Ctrl','Win','Alt'].forEach(t=>r4.appendChild(sp(t,'w1')));
+  r4.appendChild(sp('Пробіл','w6'));
+  ['Alt','Ctrl'].forEach(t=>r4.appendChild(sp(t,'w1')));
+  kb.appendChild(r4);
+}
+
+function row(){const d=document.createElement('div');d.className='kb-row';return d}
+
+function slot(keyData){
+  const d=document.createElement('div');
+  d.className='kb-slot w1';
+  d.dataset.expects=keyData.k;
+  d.dataset.filled='false';
+  const lbl=document.createElement('span');lbl.className='slbl';lbl.textContent=keyData.l;d.appendChild(lbl);
+  if(activeKeys.find(k=>k.k===keyData.k)){
+    d.classList.add('active-slot');
+    d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('hover-slot')});
+    d.addEventListener('dragleave',()=>d.classList.remove('hover-slot'));
+    d.addEventListener('drop',e=>{e.preventDefault();d.classList.remove('hover-slot');handleDrop(d)});
+  } else {
+    d.classList.add('special');
+    d.textContent=keyData.l;
+    Object.assign(d.style,{fontSize:'.8rem',fontFamily:"'DM Mono',monospace",fontWeight:'700',color:'rgba(0,70,110,.7)',background:'rgba(180,240,255,.35)',border:'1.5px solid rgba(0,160,210,.2)'});
+  }
+  return d;
+}
+
+function sp(label,w){
+  const d=document.createElement('div');
+  d.className=`kb-slot special ${w}`;
+  d.textContent=label;
+  return d;
+}
+
+function buildFloatingKeys(){
+  const area=document.getElementById('gameArea');
+  area.querySelectorAll('.float-key').forEach(k=>k.remove());
+    document.getElementById('keysLayer').innerHTML='';
+  requestAnimationFrame(()=>{
+    const shuffled=[...activeKeys].sort(()=>Math.random()-.5);
+    const aW=area.offsetWidth;
+    const aH=area.offsetHeight;
+    const kbEl=document.querySelector('.kb-container');
+    const kbH=kbEl ? kbEl.offsetHeight+22 : 215;
+    const KEY=54, PAD=12;
+    const minX=PAD, maxX=Math.max(PAD+KEY,aW-KEY-PAD);
+    const minY=46, maxY=Math.max(minY+KEY,aH-kbH-KEY-6);
+    const placed=[];
+    shuffled.forEach((keyData,i)=>{
+      const fk=document.createElement('div');
+      fk.className='float-key';
+      fk.dataset.keyVal=keyData.k;
+      fk.draggable=true;
+      fk.id='fk_'+i;
+      fk.textContent=keyData.l;
+      let x,y,tries=0;
+      do{
+        x=minX+Math.random()*(maxX-minX);
+        y=minY+Math.random()*(maxY-minY);
+        tries++;
+      }while(tries<80&&placed.some(p=>Math.abs(p[0]-x)<58&&Math.abs(p[1]-y)<58));
+      placed.push([x,y]);
+      fk.style.left=x+'px';
+      fk.style.top=y+'px';
+      const rot=(Math.random()-.5)*14;
+      fk.style.transform=`rotate(${rot}deg)`;
+      fk.dataset.rot=rot;
+      // Assign a vivid color class
+      fk.classList.add('fk-c'+(i%8));
+      fk.addEventListener('mousedown',startDrag);
+      fk.addEventListener('touchstart',startTouchDrag,{passive:false});
+      document.getElementById('keysLayer').appendChild(fk);
+    });
+  });
+}
+// ── DRAG & DROP ──────────────────────────────────────────────
+// Hit-test using slot rects only — no elementFromPoint, no visibility tricks.
+// Keyboard gets pointer-events:none during drag so nothing interferes.
+
+function getSlotUnder(clientX, clientY) {
+  const slots = document.querySelectorAll('.kb-slot.active-slot[data-filled="false"]');
+  let best = null, bestDist = 9999;
+  for (const s of slots) {
+    const r = s.getBoundingClientRect();
+    const cx = (r.left + r.right) / 2;
+    const cy = (r.top  + r.bottom) / 2;
+    // Inside rect with 8px padding
+    if (clientX >= r.left-8 && clientX <= r.right+8 &&
+        clientY >= r.top-8  && clientY <= r.bottom+8) {
+      const d = Math.hypot(clientX-cx, clientY-cy);
+      if (d < bestDist) { bestDist = d; best = s; }
+    }
+  }
+  return best;
+}
+
+function setKbPointer(on) { /* keys-layer handles z-index now */ }
+
+function snapBack(fk) {
+  fk.classList.remove('dragging');
+  fk.style.zIndex = '';
+  fk.style.opacity = '1';
+  fk.style.transform = `rotate(${fk.dataset.rot || 0}deg)`;
+}
+
+// ── Mouse ──
+function startDrag(e) {
+  if (e.button !== 0) return;
+  e.preventDefault();
+  dragEl = e.currentTarget;
+  const r = dragEl.getBoundingClientRect();
+  dragOffX = e.clientX - r.left;
+  dragOffY = e.clientY - r.top;
+  dragEl.classList.add('dragging');
+  dragEl.style.zIndex = '999';
+  dragEl.style.transform = 'scale(1.1) rotate(0deg)';
+  setKbPointer(false);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup',   onMouseUp);
+}
+
+function onMouseMove(e) {
+  if (!dragEl) return;
+  const ar = document.getElementById('gameArea').getBoundingClientRect();
+  dragEl.style.left = (e.clientX - ar.left - dragOffX) + 'px';
+  dragEl.style.top  = (e.clientY - ar.top  - dragOffY) + 'px';
+  document.querySelectorAll('.kb-slot.hover-slot').forEach(s => s.classList.remove('hover-slot'));
+  const s = getSlotUnder(e.clientX, e.clientY);
+  if (s) s.classList.add('hover-slot');
+}
+
+function onMouseUp(e) {
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup',   onMouseUp);
+  if (!dragEl) return;
+  const fk = dragEl;
+  dragEl = null;
+  document.querySelectorAll('.kb-slot.hover-slot').forEach(s => s.classList.remove('hover-slot'));
+  setKbPointer(true);
+  const s = getSlotUnder(e.clientX, e.clientY);
+  if (s) processPlacement(s, fk);
+  else   snapBack(fk);
+}
+
+// ── Touch ──
+function startTouchDrag(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  dragEl = e.currentTarget;
+  const r = dragEl.getBoundingClientRect();
+  dragOffX = t.clientX - r.left;
+  dragOffY = t.clientY - r.top;
+  dragEl.classList.add('dragging');
+  dragEl.style.zIndex = '999';
+  dragEl.style.transform = 'scale(1.1) rotate(0deg)';
+  setKbPointer(false);
+  document.addEventListener('touchmove', onTouchMove, {passive: false});
+  document.addEventListener('touchend',  onTouchUp,   {passive: false});
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  if (!dragEl) return;
+  const t = e.touches[0];
+  const ar = document.getElementById('gameArea').getBoundingClientRect();
+  dragEl.style.left = (t.clientX - ar.left - dragOffX) + 'px';
+  dragEl.style.top  = (t.clientY - ar.top  - dragOffY) + 'px';
+  document.querySelectorAll('.kb-slot.hover-slot').forEach(s => s.classList.remove('hover-slot'));
+  const s = getSlotUnder(t.clientX, t.clientY);
+  if (s) s.classList.add('hover-slot');
+}
+
+function onTouchUp(e) {
+  e.preventDefault();
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend',  onTouchUp);
+  if (!dragEl) return;
+  const fk = dragEl;
+  dragEl = null;
+  document.querySelectorAll('.kb-slot.hover-slot').forEach(s => s.classList.remove('hover-slot'));
+  setKbPointer(true);
+  const t = e.changedTouches[0];
+  const s = getSlotUnder(t.clientX, t.clientY);
+  if (s) processPlacement(s, fk);
+  else   snapBack(fk);
+}
+
+function handleDrop() {}
+
+function processPlacement(slot, fk) {
+  if (fk.dataset.keyVal === slot.dataset.expects) {
+    correctCount++; placedKeys++;
+    slot.dataset.filled = 'true';
+    slot.classList.remove('active-slot', 'hover-slot');
+    slot.classList.add('placed-ok', 'pop');
+    slot.innerHTML = `<span style="font-family:'DM Mono',monospace;font-size:.88rem;font-weight:800;color:#15803d">${fk.dataset.keyVal}</span>`;
+    fk.remove();
+    showToast('✓ Правильно!', 'tok');
+  } else {
+    wrongCount++;
+    slot.classList.add('placed-err');
+    setTimeout(() => slot.classList.remove('placed-err'), 400);
+    snapBack(fk);
+    showToast('✗ Не туди! Спробуй ще', 'terr');
+  }
+  updateStats();
+  if (placedKeys === totalKeys) setTimeout(showResult, 600);
+}
+
+function doHint(){
+  wrongCount++; updateStats();
+  const slots=[...document.querySelectorAll('.kb-slot.active-slot[data-filled="false"]')];
+  if(!slots.length)return;
+  const s=slots[Math.floor(Math.random()*slots.length)];
+  const ex=s.dataset.expects;
+  document.querySelectorAll('.float-key').forEach(fk=>{
+    fk.classList.remove('hint-glow');
+    if(fk.dataset.keyVal===ex){fk.classList.add('hint-glow');setTimeout(()=>fk.classList.remove('hint-glow'),2500);}
+  });
+  showToast('💡 Знайди підсвічену клавішу!','tok');
+}
+
+function updateStats(){
+  document.getElementById('correctCount').textContent=correctCount;
+  document.getElementById('wrongCount').textContent=wrongCount;
+  document.getElementById('leftCount').textContent=totalKeys-placedKeys;
+  document.getElementById('progressFill').style.width=(totalKeys>0?(placedKeys/totalKeys*100):0)+'%';
+  // Show finish button if there are wrong answers (player might be stuck)
+  const fb = document.getElementById('finishBtn');
+  if(fb && wrongCount >= 2) fb.style.display='';
+}
+
+function showResult(){
+  const total=correctCount+wrongCount;
+  const pct=Math.round(correctCount/Math.max(total,1)*100);
+  // Ukrainian 12-point grading scale
+  let grade,emoji,title,msg,gradeClass;
+  if(pct>=97){grade=12;emoji='🏆';title='Відмінно!';msg='Найвищий результат! Ти справжній майстер клавіатури!';gradeClass='grade-12';}
+  else if(pct>=93){grade=11;emoji='🥇';title='Відмінно!';msg='Чудовий результат! Ти майже досконалий!';gradeClass='grade-11';}
+  else if(pct>=90){grade=10;emoji='⭐';title='Відмінно!';msg='Дуже добре! Продовжуй у тому ж дусі!';gradeClass='grade-10';}
+  else if(pct>=85){grade=9;emoji='😊';title='Добре!';msg='Добрий результат! Ще трохи зусиль — і відмінно!';gradeClass='grade-9';}
+  else if(pct>=75){grade=8;emoji='👍';title='Добре!';msg='Непоганий результат! Практикуйся більше!';gradeClass='grade-8';}
+  else if(pct>=65){grade=7;emoji='🙂';title='Добре!';msg='Є прогрес! Продовжуй тренуватись!';gradeClass='grade-7';}
+  else if(pct>=55){grade=6;emoji='📚';title='Достатньо!';msg='Непогано! Але є над чим попрацювати.';gradeClass='grade-6';}
+  else if(pct>=45){grade=5;emoji='🔄';title='Достатньо!';msg='Старайся більше! Ти можеш краще!';gradeClass='grade-5';}
+  else if(pct>=35){grade=4;emoji='💪';title='Тренуйся!';msg='Потрібно більше практики. Не здавайся!';gradeClass='grade-4';}
+  else if(pct>=25){grade=3;emoji='😅';title='Тренуйся!';msg='Ще потрібно попрацювати. Спробуй ще раз!';gradeClass='grade-3';}
+  else if(pct>=15){grade=2;emoji='😬';title='Тренуйся!';msg='Не засмучуйся! Практика — ключ до успіху!';gradeClass='grade-2';}
+  else{grade=1;emoji='🆕';title='Початок!';msg='Кожен починав з нуля. Продовжуй спробувати!';gradeClass='grade-1';}
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rGrade').textContent=grade;
+  document.getElementById('resultPanel').className='result-panel '+gradeClass;
+  document.getElementById('rC').textContent=correctCount;
+  document.getElementById('rW').textContent=wrongCount;
+  document.getElementById('rP').textContent=pct+'%';
+  document.getElementById('rMsg').textContent=msg;
+  showScreen('resultScreen');
+  if(pct>=75)confetti();
+}
+
+function confetti(){
+  const colors=['#7C6FFF','#FF6B6B','#4ECDC4','#56CF88','#FFD166'];
+  for(let i=0;i<70;i++){
+    const c=document.createElement('div');c.className='confetti';
+    const s=6+Math.random()*8;
+    c.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}vw;top:-12px;background:${colors[~~(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${2.5+Math.random()*2.5}s;animation-delay:${Math.random()*1.2}s`;
+    document.body.appendChild(c);setTimeout(()=>c.remove(),6000);
+  }
+}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type+' show';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1400);
+}
+</script>
+</body>
+</html>
