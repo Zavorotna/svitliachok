@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Як народжується сайт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800&family=Ruda:wght@700;900&family=Unbounded:wght@700;800&family=Yeseva+One&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -14,10 +17,17 @@
     display: flex; flex-direction: column;
   }
 
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
   .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 22px; border-bottom: 1px solid #1b2233; font-size: 14px; color: #9aa4bf; }
   .top b { color: #e6e9f0; letter-spacing: .5px; }
   .top .note { color: #7c8bb0; font-size: 13px; }
-  .top .count { color: #a78bfa; font-weight: 700; }
+
+  .dots { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
+  .dots .dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 5px; background: #2a3350; cursor: pointer; transition: all .25s ease; }
+  .dots .dot:hover { background: #4b5a85; }
+  .dots .dot.active { width: 24px; background: #a78bfa; box-shadow: 0 0 12px rgba(167,139,250,.65); }
+  .dots .dot:focus-visible { outline: 2px solid #a78bfa; outline-offset: 3px; }
 
   .stage { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.05fr); }
 
@@ -38,11 +48,28 @@
   .caret { display: inline-block; width: 8px; height: 16px; background: #7c5cff; vertical-align: -3px; margin-left: 1px; animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
 
-  .preview { display: flex; flex-direction: column; min-height: 0; background: #0b0f17; padding: 18px; }
+  .preview { position: relative; display: flex; flex-direction: column; min-height: 0; background: #0b0f17; padding: 18px; }
   .browser { flex: 1; display: flex; flex-direction: column; min-height: 0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 30px 80px -30px #000; }
   .chrome { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #e9edf3; flex: 0 0 auto; }
   .chrome .d { width: 11px; height: 11px; border-radius: 50%; }
+  .reload { flex: 0 0 auto; width: 24px; height: 24px; margin-left: 2px; border: 0; border-radius: 50%; background: rgba(0,0,0,.06); color: #6b7280; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s ease; }
+  .reload svg { width: 13px; height: 13px; }
+  .reload:hover { background: rgba(0,0,0,.12); color: #374151; transform: rotate(90deg); }
+  .reload:focus-visible { outline: 2px solid #7c5cff; outline-offset: 2px; }
   .url { flex: 1; margin-left: 8px; background: #fff; border-radius: 8px; padding: 5px 12px; font: 13px ui-monospace, monospace; color: #4b5563; }
+
+  .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 8; width: 46px; height: 46px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; background: rgba(12,16,28,.62); backdrop-filter: blur(6px); color: #e6e9f0; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: .65; transition: all .2s ease; }
+  .nav-arrow svg { width: 20px; height: 20px; }
+  .nav-arrow:hover, .nav-arrow:focus-visible { opacity: 1; background: rgba(124,92,255,.35); border-color: rgba(167,139,250,.6); transform: translateY(-50%) scale(1.08); }
+  .nav-arrow:active { transform: translateY(-50%) scale(.94); }
+  .nav-prev { left: 26px; }
+  .nav-next { right: 26px; }
+  @media (max-width: 640px) {
+    .nav-arrow { width: 38px; height: 38px; }
+    .nav-arrow svg { width: 17px; height: 17px; }
+    .nav-prev { left: 10px; }
+    .nav-next { right: 10px; }
+  }
   .screen { flex: 1; overflow: auto; min-height: 0; position: relative; background: #fff; container-type: inline-size; }
   .site { min-height: 100%; }
   .badge { position: absolute; left: 14px; bottom: 14px; background: rgba(8,12,20,.82); color: #fff; padding: 8px 15px; border-radius: 999px; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); max-width: calc(100% - 28px); z-index: 6; }
@@ -120,12 +147,12 @@
   /* --- Тема 1: гра NOVA --- */
   .site--nova.is-styled { background: radial-gradient(1200px 520px at 50% -12%, #2a1a5e, #0b0f1f 62%); color: #e8ecff; --orbA: #7c5cff; --orbB: #22d3ee; }
   .site--nova.is-styled .bar { background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08); box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); }
-  .site--nova.is-styled .logo { color: #a78bfa; }
+  .site--nova.is-styled .logo { font-family: 'Exo 2', system-ui, sans-serif; color: #a78bfa; }
   .site--nova.is-styled nav a { color: #b9c0e0; }
   .site--nova.is-styled .cta { background: #a78bfa; color: #160e2e; }
   .site--nova.is-styled .burger { color: #e8ecff; background: rgba(255,255,255,.08); }
   .site--nova.is-styled .hero { background-image: var(--tex), radial-gradient(700px 340px at 50% 42%, rgba(124,92,255,.35), rgba(11,15,31,0)); }
-  .site--nova.is-styled h1 { background: linear-gradient(90deg, #ffffff, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .site--nova.is-styled h1 { font-family: 'Exo 2', system-ui, sans-serif; letter-spacing: .5px; background: linear-gradient(90deg, #ffffff, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .site--nova.is-styled .hero p { color: #aab2d8; }
   .site--nova.is-styled .hero-btn { background: linear-gradient(90deg, #7c5cff, #22d3ee); color: #fff; box-shadow: 0 16px 44px -10px rgba(124,92,255,.75); }
   .site--nova.is-styled .card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 20px 44px -20px rgba(0,0,0,.7); }
@@ -134,12 +161,12 @@
   /* --- Тема 2: піца FRESTO --- */
   .site--fresto.is-styled { background: #fff7ed; color: #3b2a20; --orbA: #f97316; --orbB: #fca5a5; }
   .site--fresto.is-styled .bar { background: #fff; box-shadow: 0 8px 26px -14px rgba(0,0,0,.35); }
-  .site--fresto.is-styled .logo { color: #ef4444; }
+  .site--fresto.is-styled .logo { font-family: 'Ruda', system-ui, sans-serif; color: #ef4444; }
   .site--fresto.is-styled nav a { color: #7c5b4a; }
   .site--fresto.is-styled .cta { background: #ef4444; color: #fff; }
   .site--fresto.is-styled .burger { color: #3b2a20; background: rgba(0,0,0,.06); }
   .site--fresto.is-styled .hero { background-image: var(--tex), radial-gradient(820px 360px at 50% -6%, #ffd9b0, rgba(255,247,237,0)); }
-  .site--fresto.is-styled h1 { color: #b91c1c; }
+  .site--fresto.is-styled h1 { font-family: 'Ruda', system-ui, sans-serif; color: #b91c1c; }
   .site--fresto.is-styled .hero p { color: #7c5b4a; }
   .site--fresto.is-styled .hero-btn { background: linear-gradient(90deg, #f97316, #ef4444); color: #fff; box-shadow: 0 16px 40px -14px rgba(239,68,68,.6); }
   .site--fresto.is-styled .card { background: #fff; box-shadow: 0 16px 40px -22px rgba(0,0,0,.5); }
@@ -149,12 +176,12 @@
   /* --- Тема 3: музика WAVELY --- */
   .site--wavely.is-styled { background: linear-gradient(160deg, #2e1065, #7e22ce 58%, #db2777); color: #fde7ff; --orbA: #db2777; --orbB: #7e22ce; }
   .site--wavely.is-styled .bar { background: rgba(0,0,0,.16); box-shadow: 0 10px 30px -12px rgba(0,0,0,.5); }
-  .site--wavely.is-styled .logo { color: #fff; }
+  .site--wavely.is-styled .logo { font-family: 'Unbounded', system-ui, sans-serif; color: #fff; }
   .site--wavely.is-styled nav a { color: #f3d5ff; }
   .site--wavely.is-styled .cta { background: #fff; color: #7e22ce; }
   .site--wavely.is-styled .burger { color: #fff; background: rgba(255,255,255,.15); }
   .site--wavely.is-styled .hero { background-image: var(--tex), linear-gradient(160deg, rgba(46,16,101,.25), rgba(219,39,119,.25)); }
-  .site--wavely.is-styled h1 { color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.4); }
+  .site--wavely.is-styled h1 { font-family: 'Unbounded', system-ui, sans-serif; color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.4); }
   .site--wavely.is-styled .hero p { color: #f6ddff; }
   .site--wavely.is-styled .hero-btn { background: #111; color: #fff; box-shadow: 0 16px 40px -12px rgba(0,0,0,.6); }
   .site--wavely.is-styled .card { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); box-shadow: 0 20px 44px -20px rgba(0,0,0,.5); }
@@ -163,12 +190,12 @@
   /* --- Тема 4: аніме SAKURA --- */
   .site--anime.is-styled { background: linear-gradient(160deg, #1e1b4b, #7e22ce 52%, #ec4899); color: #fdf2ff; --orbA: #f472b6; --orbB: #38bdf8; }
   .site--anime.is-styled .bar { background: rgba(0,0,0,.18); box-shadow: 0 10px 30px -12px rgba(0,0,0,.5); }
-  .site--anime.is-styled .logo { color: #f9a8d4; }
+  .site--anime.is-styled .logo { font-family: 'Yeseva One', system-ui, serif; color: #f9a8d4; }
   .site--anime.is-styled nav a { color: #f5d0fe; }
   .site--anime.is-styled .cta { background: linear-gradient(90deg, #f472b6, #38bdf8); color: #1b1030; }
   .site--anime.is-styled .burger { color: #fff; background: rgba(255,255,255,.15); }
   .site--anime.is-styled .hero { background-image: var(--tex), linear-gradient(160deg, rgba(124,58,237,.2), rgba(236,72,153,.28)); }
-  .site--anime.is-styled h1 { color: #fff; text-shadow: 0 4px 26px rgba(236,72,153,.6); }
+  .site--anime.is-styled h1 { font-family: 'Yeseva One', system-ui, serif; color: #fff; text-shadow: 0 4px 26px rgba(236,72,153,.6); }
   .site--anime.is-styled .hero p { color: #fbe3ff; }
   .site--anime.is-styled .hero-btn { background: linear-gradient(90deg, #f472b6, #38bdf8); color: #12082a; box-shadow: 0 16px 40px -12px rgba(244,114,182,.7); }
   .site--anime.is-styled .card { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); box-shadow: 0 20px 44px -20px rgba(0,0,0,.5); }
@@ -199,7 +226,8 @@
   <div class="top">
     <b>Як народжується сайт</b>
     <span class="note">HTML однаковий для всіх сайтів &mdash; змінюється тільки CSS</span>
-    <span class="count" id="count">Сайт 1 / 4</span>
+    <div class="dots" id="dots" role="group" aria-label="Перемкнути сайт"></div>
+    <span class="sr-only" id="count" aria-live="polite"></span>
   </div>
 
   <div class="stage">
@@ -217,11 +245,17 @@
     </div>
 
     <div class="preview">
+      <button class="nav-arrow nav-prev" id="btnPrev" aria-label="Попередній сайт">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
       <div class="browser">
         <div class="chrome">
           <span class="d" style="background:#ff5f57"></span>
           <span class="d" style="background:#febc2e"></span>
           <span class="d" style="background:#28c840"></span>
+          <button class="reload" id="btnRestart" aria-label="Оновити сторінку (повторити анімацію)" title="Оновити">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
           <span class="url" id="url">example.com</span>
         </div>
         <div class="screen" id="screen">
@@ -229,13 +263,16 @@
           <div class="badge" id="badge"></div>
         </div>
       </div>
+      <button class="nav-arrow nav-next" id="btnNext" aria-label="Наступний сайт">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
     </div>
   </div>
 
   <div class="hint">
-    <span><kbd>&rarr;</kbd> наступний сайт</span>
-    <span><kbd>&larr;</kbd> назад</span>
-    <span><kbd>R</kbd> повторити</span>
+    <span>клікай ‹ › або крапки нагорі, щоб гортати сайти</span>
+    <span>натисни на &#8635; біля адресного рядка, щоб повторити</span>
+    <span><kbd>&rarr;</kbd>/<kbd>&larr;</kbd> теж працюють</span>
     <span>наведи мишку на картки</span>
     <span>натисни на бургер</span>
   </div>
@@ -268,13 +305,14 @@
   justify-content: space-between;
   box-shadow: 0 8px 30px rgba(0,0,0,.4);
 }
-.logo { color: #a78bfa; font-weight: 800; }
+.logo { font-family: 'Exo 2', sans-serif; color: #a78bfa; font-weight: 800; }
 .hero {
   background-image: url("stars.svg"),
     radial-gradient(#7c5cff, #0b0f1f);
   animation: drift 22s linear infinite;
 }
 h1 {
+  font-family: 'Exo 2', sans-serif;
   font-size: 58px;
   background: linear-gradient(90deg, #fff, #a78bfa);
 }
@@ -305,13 +343,13 @@ h1 {
   justify-content: space-between;
   box-shadow: 0 8px 26px rgba(0,0,0,.15);
 }
-.logo { color: #ef4444; font-weight: 800; }
+.logo { font-family: 'Ruda', sans-serif; color: #ef4444; font-weight: 800; }
 .hero {
   background-image: url("dots.svg"),
     radial-gradient(#ffe3c7, #fff7ed);
   animation: drift 22s linear infinite;
 }
-h1 { font-size: 56px; color: #b91c1c; }
+h1 { font-family: 'Ruda', sans-serif; font-size: 56px; color: #b91c1c; }
 .hero-btn {
   background: linear-gradient(90deg, #f97316, #ef4444);
   border-radius: 999px;
@@ -345,6 +383,7 @@ h1 { font-size: 56px; color: #b91c1c; }
   animation: drift 22s linear infinite;
 }
 h1 {
+  font-family: 'Unbounded', sans-serif;
   font-size: 58px;
   color: #fff;
   text-shadow: 0 6px 30px rgba(0,0,0,.4);
@@ -383,6 +422,7 @@ h1 {
   animation: drift 18s linear infinite;
 }
 h1 {
+  font-family: 'Yeseva One', serif;
   font-size: 58px;
   color: #fff;
   text-shadow: 0 4px 24px rgba(236,72,153,.6);
@@ -402,6 +442,7 @@ h1 {
   const badge = document.getElementById("badge");
   const url = document.getElementById("url");
   const count = document.getElementById("count");
+  const dots = document.getElementById("dots");
   const cssCode = document.getElementById("cssCode");
   const cssGutter = document.getElementById("cssGutter");
   const cssPane = document.getElementById("cssPane");
@@ -502,7 +543,8 @@ h1 {
     index = (i + projects.length) % projects.length;
     const p = projects[index];
     url.textContent = p.domain;
-    count.textContent = `Сайт ${index + 1} / ${projects.length}`;
+    count.textContent = `Сайт ${index + 1} з ${projects.length}: ${p.name}`;
+    dots.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === index));
     site.className = "site site--" + p.key;
     site.style.setProperty("--tex", "url('data:image/svg+xml," + encodeURIComponent(svgTex[p.key]) + "')");
     site.innerHTML = renderSite(p.content, p.key);
@@ -551,6 +593,16 @@ h1 {
     else if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
     else if (["r", "R", "к", "К"].includes(e.key)) { e.preventDefault(); load(index); }
   });
+
+  dots.innerHTML = projects.map((p, i) =>
+    `<button class="dot" data-i="${i}" aria-label="Сайт ${p.name}"></button>`).join("");
+  dots.addEventListener("click", e => {
+    const b = e.target.closest(".dot");
+    if (b) load(+b.dataset.i);
+  });
+  document.getElementById("btnPrev").addEventListener("click", prev);
+  document.getElementById("btnNext").addEventListener("click", next);
+  document.getElementById("btnRestart").addEventListener("click", () => load(index));
 
   site.addEventListener("click", e => {
     const b = e.target.closest(".burger");
