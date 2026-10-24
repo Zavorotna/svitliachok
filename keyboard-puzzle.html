@@ -36,17 +36,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .logo-text{font-size:2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--text),var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-text span{background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .tagline{color:var(--muted);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:30px}
-.categories{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:880px}
+.categories{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:1120px}
 .category{background:rgba(185, 185, 185, 0.2);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,.9);border-radius:18px;padding:20px;width:264px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;box-shadow:0 8px 32px rgba(0,185,220,.15)}
 .category::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0}
 .cat-easy::before{background:linear-gradient(90deg,var(--green),var(--accent3))}
 .cat-medium::before{background:linear-gradient(90deg,var(--yellow),var(--accent2))}
 .cat-hard::before{background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.cat-super::before{background:linear-gradient(90deg,var(--accent),#1e1b4b)}
 .category:hover{border-color:var(--accent);transform:translateY(-4px)}
 .cat-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .cat-icon{font-size:1.6rem}
 .cat-name{font-size:1rem;font-weight:800}
-.cat-easy .cat-name{color:var(--green)}.cat-medium .cat-name{color:var(--yellow)}.cat-hard .cat-name{color:var(--accent2)}
+.cat-easy .cat-name{color:var(--green)}.cat-medium .cat-name{color:var(--yellow)}.cat-hard .cat-name{color:var(--accent2)}.cat-super .cat-name,.cat-super .cat-icon{color:var(--accent)}
 .cat-levels{display:flex;flex-direction:column;gap:7px}
 .level-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(249, 253, 254, 0.9);border:1px solid rgba(0,180,220,.9);border-radius:11px;padding:9px 13px;cursor:pointer;transition:all .2s;width:100%;text-align:left}
 .level-btn:hover{border-color:var(--accent);background:rgba(124,111,255,.1);transform:translateX(4px)}
@@ -91,6 +92,8 @@ body:before {
 .float-key{position:absolute;width:52px;height:52px;background:var(--key-bg);border:2px solid var(--key-border);border-radius:11px;box-shadow:0 4px 0 var(--key-shadow),0 8px 20px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;color:var(--text);cursor:grab;user-select:none;transition:box-shadow .15s,border-color .15s,transform .15s;pointer-events:auto;touch-action:none}
 .float-key:hover{border-color:var(--accent);box-shadow:0 4px 0 var(--key-shadow),0 0 22px rgba(124,111,255,.5);z-index:20;transform:translateY(-3px) scale(1.05)}
 .float-key.dragging{cursor:grabbing;opacity:.88;z-index:100;box-shadow:0 12px 40px rgba(124,111,255,.45);border-color:var(--accent)}
+.float-key.fk-wide{width:auto;min-width:52px;padding:0 12px;font-family:'Syne',sans-serif;font-size:.78rem}
+.float-key.fk-space{min-width:160px}
 .float-key.hint-glow{border-color:var(--yellow)!important;animation:hpulse .7s ease infinite alternate}
 
 /* Colorful key palette */
@@ -114,6 +117,9 @@ body:before {
 .kb-slot.active-slot{border-color:rgba(124,111,255,.5);background:rgba(124,111,255,.1);color:rgba(80,60,200,.7)}
 .kb-slot.hover-slot{border-color:var(--accent)!important;background:rgba(124,111,255,.14)!important;transform:scale(1.07);box-shadow:0 0 18px rgba(124,111,255,.35)}
 .kb-slot.placed-ok{border:2px solid rgba(34,197,94,.7);background:rgba(34,197,94,.15);color:#15803d;font-weight:700}
+.kb-slot.placed-part{border:2px solid rgba(34,197,94,.45);background:rgba(34,197,94,.08)}
+.kb-slot .slot-char{font-family:'DM Mono',monospace;font-size:.88rem;font-weight:800;color:#15803d}
+.kb-slot .kc-shift{position:absolute;top:1px;left:5px;font-size:.66rem}
 .kb-slot.placed-err{animation:errshake .35s ease;border-color:var(--accent2)!important;background:rgba(255,107,107,.1)!important}
 .kb-slot .slbl{position:absolute;bottom:2px;right:4px;font-size:.44rem;color:rgba(0,80,120,.55);font-family:'Syne',sans-serif;font-weight:800;pointer-events:none}
 @keyframes errshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}60%{transform:translateX(5px)}}
@@ -194,6 +200,12 @@ body:before {
         <button class="level-btn" onclick="startGame('hard',3)"><div><div class="lbname">Рівень 3</div><div class="lbdesc">Вся клавіатура</div></div><div class="lbbadge">43 клавіші</div></button>
       </div>
     </div>
+    <div class="category cat-super">
+      <div class="cat-header"><div class="cat-icon">★</div><div class="cat-name">Майстер</div></div>
+      <div class="cat-levels">
+        <button class="level-btn" onclick="startGame('super',1)"><div><div class="lbname">Суперскладний</div><div class="lbdesc">Без підказок: усі клавіші + символи</div></div><div class="lbbadge">72 деталі</div></button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -207,7 +219,7 @@ body:before {
       <div class="stat-pill todo">◎ <span id="leftCount">0</span></div>
     </div>
     <div class="top-actions">
-      <button class="btn" onclick="doHint()">💡 Підказка</button>
+      <button class="btn" id="hintBtn" onclick="doHint()">💡 Підказка</button>
       <button class="btn acc" id="finishBtn" onclick="showResult()" style="display:none">🏁 Результат</button>
       <button class="btn" onclick="backToStart()">← Меню</button>
     </div>
@@ -215,7 +227,7 @@ body:before {
   <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="game-area" id="gameArea">
     <div class="level-label" id="levelLabel"></div>
-    <div class="instruction">👆 Перетягни клавіші на їхні місця</div>
+    <div class="instruction" id="instruction"></div>
     <div class="kb-container"><div class="keyboard" id="keyboard"></div></div>
     <div class="keys-layer" id="keysLayer"></div>
   </div>
@@ -247,22 +259,29 @@ const ROWS = {
   top:[{l:'Й',k:'Й'},{l:'Ц',k:'Ц'},{l:'У',k:'У'},{l:'К',k:'К'},{l:'Е',k:'Е'},{l:'Н',k:'Н'},{l:'Г',k:'Г'},{l:'Ш',k:'Ш'},{l:'Щ',k:'Щ'},{l:'З',k:'З'}],
   topX:[{l:'Х',k:'Х'},{l:'Ї',k:'Ї'}],
   home:[{l:'Ф',k:'Ф'},{l:'І',k:'І'},{l:'В',k:'В'},{l:'А',k:'А'},{l:'П',k:'П'},{l:'Р',k:'Р'},{l:'О',k:'О'},{l:'Л',k:'Л'},{l:'Д',k:'Д'},{l:'Ж',k:'Ж'},{l:'Є',k:'Є'}],
-  bottom:[{l:'Я',k:'Я'},{l:'Ч',k:'Ч'},{l:'С',k:'С'},{l:'М',k:'М'},{l:'И',k:'И'},{l:'Т',k:'Т'},{l:'Ь',k:'Ь'},{l:'Б',k:'Б'},{l:'Ю',k:'Ю'},{l:'.',k:'.'}]
+  bottom:[{l:'Я',k:'Я'},{l:'Ч',k:'Ч'},{l:'С',k:'С'},{l:'М',k:'М'},{l:'И',k:'И'},{l:'Т',k:'Т'},{l:'Ь',k:'Ь'},{l:'Б',k:'Б'},{l:'Ю',k:'Ю'},{l:'.',k:'.'}],
+  bsl:[{l:'\\',k:'\\'}]
 };
+
+const SHIFT_SYMBOLS={'1':'!','2':'"','3':'№','4':';','5':'%','6':':','7':'?','8':'*','9':'(','0':')','-':'_','=':'+','\\':'/','.':','};
+const SPECIAL_KEYS=['←','Tab','Caps','Enter','Shift','Shift','Ctrl','Win','Alt','Пробіл','Alt','Ctrl'].map(t=>({l:t,k:t}));
+const SYMBOL_KEYS=Object.values(SHIFT_SYMBOLS).map(t=>({l:t,k:t}));
 
 const LEVEL_KEYS={
   easy:{1:[...ROWS.numbers.slice(0,5)],2:[...ROWS.numbers],3:[...ROWS.numbers,...ROWS.numX]},
   medium:{1:[...ROWS.top],2:[...ROWS.home],3:[...ROWS.bottom]},
-  hard:{1:[...ROWS.numbers,...ROWS.top],2:[...ROWS.top,...ROWS.topX,...ROWS.home,...ROWS.bottom],3:[...ROWS.numbers,...ROWS.numX,...ROWS.top,...ROWS.topX,...ROWS.home,...ROWS.bottom]}
+  hard:{1:[...ROWS.numbers,...ROWS.top],2:[...ROWS.top,...ROWS.topX,...ROWS.home,...ROWS.bottom],3:[...ROWS.numbers,...ROWS.numX,...ROWS.top,...ROWS.topX,...ROWS.home,...ROWS.bottom]},
+  super:{1:[...ROWS.numbers,...ROWS.numX,...ROWS.top,...ROWS.topX,...ROWS.bsl,...ROWS.home,...ROWS.bottom,...SPECIAL_KEYS,...SYMBOL_KEYS]}
 };
 
 const LEVEL_NAMES={
   easy:['','Цифри 1–5','Цифри 1–0','Цифри + знаки'],
   medium:['','Верхній ряд','Середній ряд','Нижній ряд'],
-  hard:['','Цифри + верхній ряд','Всі три ряди','Вся клавіатура']
+  hard:['','Цифри + верхній ряд','Всі три ряди','Вся клавіатура'],
+  super:['','Суперскладний: без підказок']
 };
 
-let currentLevel='easy', currentSub=1;
+let currentLevel='easy', currentSub=1, noHints=false;
 let correctCount=0, wrongCount=0, totalKeys=0, placedKeys=0;
 let activeKeys=[];
 let dragEl=null, dragOffX=0, dragOffY=0;
@@ -274,9 +293,13 @@ function retryLevel(){startGame(currentLevel,currentSub)}
 function startGame(diff,sub){
   currentLevel=diff; currentSub=sub;
   correctCount=0; wrongCount=0; placedKeys=0;
+  noHints=diff==='super';
   activeKeys=LEVEL_KEYS[diff][sub];
   totalKeys=activeKeys.length;
-  document.getElementById('levelLabel').textContent=(diff==='easy'?'🌱':diff==='medium'?'🔥':'💀')+' '+LEVEL_NAMES[diff][sub];
+  document.getElementById('levelLabel').textContent=(diff==='easy'?'🌱':diff==='medium'?'🔥':diff==='super'?'★':'💀')+' '+LEVEL_NAMES[diff][sub];
+  document.getElementById('hintBtn').style.display=noHints?'none':'';
+  document.getElementById('finishBtn').style.display='none';
+  document.getElementById('instruction').textContent=noHints?'Символи став на ту клавішу, де вони набираються з Shift':'👆 Перетягни клавіші на їхні місця';
   buildKeyboard();
   buildFloatingKeys();
   updateStats();
@@ -290,36 +313,39 @@ function buildKeyboard(){
   const r0=row(); r0.appendChild(sp('~','w1'));
   ROWS.numbers.forEach(k=>r0.appendChild(slot(k)));
   ROWS.numX.forEach(k=>r0.appendChild(slot(k)));
-  r0.appendChild(sp('←','w15')); kb.appendChild(r0);
+  r0.appendChild(key('←','w15')); kb.appendChild(r0);
   // Row 1: top letters
-  const r1=row(); r1.appendChild(sp('Tab','w14'));
+  const r1=row(); r1.appendChild(key('Tab','w14'));
   ROWS.top.forEach(k=>r1.appendChild(slot(k)));
   ROWS.topX.forEach(k=>r1.appendChild(slot(k)));
-  r1.appendChild(sp('\\','w14')); kb.appendChild(r1);
+  r1.appendChild(key('\\','w14')); kb.appendChild(r1);
   // Row 2: home
-  const r2=row(); r2.appendChild(sp('Caps','w175'));
+  const r2=row(); r2.appendChild(key('Caps','w175'));
   ROWS.home.forEach(k=>r2.appendChild(slot(k)));
-  r2.appendChild(sp('Enter','w175')); kb.appendChild(r2);
+  r2.appendChild(key('Enter','w175')); kb.appendChild(r2);
   // Row 3: bottom
-  const r3=row(); r3.appendChild(sp('Shift','w225'));
+  const r3=row(); r3.appendChild(key('Shift','w225'));
   ROWS.bottom.forEach(k=>r3.appendChild(slot(k)));
-  r3.appendChild(sp('Shift','w225')); kb.appendChild(r3);
+  r3.appendChild(key('Shift','w225')); kb.appendChild(r3);
   // Row 4: space
   const r4=row();
-  ['Ctrl','Win','Alt'].forEach(t=>r4.appendChild(sp(t,'w1')));
-  r4.appendChild(sp('Пробіл','w6'));
-  ['Alt','Ctrl'].forEach(t=>r4.appendChild(sp(t,'w1')));
+  ['Ctrl','Win','Alt'].forEach(t=>r4.appendChild(key(t,'w1')));
+  r4.appendChild(key('Пробіл','w6'));
+  ['Alt','Ctrl'].forEach(t=>r4.appendChild(key(t,'w1')));
   kb.appendChild(r4);
 }
 
 function row(){const d=document.createElement('div');d.className='kb-row';return d}
 
-function slot(keyData){
+function key(label,w){return activeKeys.some(k=>k.k===label)?slot({l:label,k:label},w):sp(label,w)}
+
+function slot(keyData,w='w1'){
   const d=document.createElement('div');
-  d.className='kb-slot w1';
+  d.className=`kb-slot ${w}`;
   d.dataset.expects=keyData.k;
   d.dataset.filled='false';
-  const lbl=document.createElement('span');lbl.className='slbl';lbl.textContent=keyData.l;d.appendChild(lbl);
+  if(noHints&&SHIFT_SYMBOLS[keyData.k])d.dataset.shift=SHIFT_SYMBOLS[keyData.k];
+  if(!noHints){const lbl=document.createElement('span');lbl.className='slbl';lbl.textContent=keyData.l;d.appendChild(lbl);}
   if(activeKeys.find(k=>k.k===keyData.k)){
     d.classList.add('active-slot');
     d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('hover-slot')});
@@ -361,13 +387,18 @@ function buildFloatingKeys(){
       fk.draggable=true;
       fk.id='fk_'+i;
       fk.textContent=keyData.l;
+      if(keyData.l.length>1)fk.classList.add('fk-wide');
+      if(keyData.k==='Пробіл')fk.classList.add('fk-space');
+      document.getElementById('keysLayer').appendChild(fk);
+      const w=fk.offsetWidth||KEY;
+      const maxXk=Math.max(minX,maxX-(w-KEY));
       let x,y,tries=0;
       do{
-        x=minX+Math.random()*(maxX-minX);
+        x=minX+Math.random()*(maxXk-minX);
         y=minY+Math.random()*(maxY-minY);
         tries++;
-      }while(tries<80&&placed.some(p=>Math.abs(p[0]-x)<58&&Math.abs(p[1]-y)<58));
-      placed.push([x,y]);
+      }while(tries<150&&placed.some(p=>x<p[0]+p[2]+6&&p[0]<x+w+6&&Math.abs(p[1]-y)<58));
+      placed.push([x,y,w]);
       fk.style.left=x+'px';
       fk.style.top=y+'px';
       const rot=(Math.random()-.5)*14;
@@ -377,7 +408,6 @@ function buildFloatingKeys(){
       fk.classList.add('fk-c'+(i%8));
       fk.addEventListener('mousedown',startDrag);
       fk.addEventListener('touchstart',startTouchDrag,{passive:false});
-      document.getElementById('keysLayer').appendChild(fk);
     });
   });
 }
@@ -496,12 +526,23 @@ function onTouchUp(e) {
 function handleDrop() {}
 
 function processPlacement(slot, fk) {
-  if (fk.dataset.keyVal === slot.dataset.expects) {
+  const v = fk.dataset.keyVal;
+  const part = v === slot.dataset.expects ? 'placedBase' : v === slot.dataset.shift ? 'placedShift' : '';
+  if (part && !slot.dataset[part]) {
     correctCount++; placedKeys++;
-    slot.dataset.filled = 'true';
-    slot.classList.remove('active-slot', 'hover-slot');
-    slot.classList.add('placed-ok', 'pop');
-    slot.innerHTML = `<span style="font-family:'DM Mono',monospace;font-size:.88rem;font-weight:800;color:#15803d">${fk.dataset.keyVal}</span>`;
+    slot.dataset[part] = 'true';
+    const done = !slot.dataset.shift || (slot.dataset.placedBase && slot.dataset.placedShift);
+    slot.classList.remove('hover-slot', 'pop');
+    void slot.offsetWidth;
+    slot.classList.add('pop');
+    if (done) {
+      slot.dataset.filled = 'true';
+      slot.classList.remove('active-slot', 'placed-part');
+      slot.classList.add('placed-ok');
+    } else {
+      slot.classList.add('placed-part');
+    }
+    renderSlot(slot);
     fk.remove();
     showToast('✓ Правильно!', 'tok');
   } else {
@@ -515,7 +556,27 @@ function processPlacement(slot, fk) {
   if (placedKeys === totalKeys) setTimeout(showResult, 600);
 }
 
+function renderSlot(slot) {
+  slot.textContent = '';
+  if (slot.dataset.shift) {
+    slot.append(
+      slotChar(slot.dataset.placedShift ? slot.dataset.shift : '', 'kc-shift'),
+      slotChar(slot.dataset.placedBase ? slot.dataset.expects : '', '')
+    );
+  } else {
+    slot.append(slotChar(slot.dataset.expects, ''));
+  }
+}
+
+function slotChar(text, cls) {
+  const s = document.createElement('span');
+  s.className = ('slot-char ' + cls).trim();
+  s.textContent = text;
+  return s;
+}
+
 function doHint(){
+  if(noHints)return;
   wrongCount++; updateStats();
   const slots=[...document.querySelectorAll('.kb-slot.active-slot[data-filled="false"]')];
   if(!slots.length)return;
